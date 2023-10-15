@@ -9,36 +9,38 @@ const { isLoggedIn } = storeToRefs(useUserStore());
 const { currentUsername } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
-let profiles = ref<Record<string, string>>();
+// let profiles = ref<Record<string, string>>();
 let editing = ref("");
+let profile = ref("");
 
 let username = ref("");
 let password = ref("");
 
 // Sample profile data
-let profile = ref({
-  username: "hello",
-  dateCreated: "2023-10-12T16:27:01.885Z",
-  dateUpdated: "2023-10-12T16:48:16.379Z",
-  email: "ffffd@me.co",
-  headshotUrl: "https://robohash.org/hello",
-  identity: "farmer",
-  lastLocation: "[5,5]",
-  nickname: "new nickname",
-  role: "user",
-  user: "651c889c758a0dd39bfecff3",
-  _id: "65281e5517086c41a447c417",
-});
+// let profile = ref({
+//   username: "hello",
+//   dateCreated: "2023-10-12T16:27:01.885Z",
+//   dateUpdated: "2023-10-12T16:48:16.379Z",
+//   email: "ffffd@me.co",
+//   headshotUrl: "https://robohash.org/hello",
+//   identity: "farmer",
+//   lastLocation: "[5,5]",
+//   nickname: "new nickname",
+//   role: "user",
+//   user: "651c889c758a0dd39bfecff3",
+//   _id: "65281e5517086c41a447c417",
+// });
 
 async function getProfile(username: string) {
+  // const thisUsername: string = currentUsername;
   await console.log("currentUsername", currentUsername.value);
-  let string: currentUsername = currentUsername.value;
 
   let query: Record<string, string> = username !== undefined ? { username } : {};
   let profileResult;
   try {
+    console.log("query=", query);
     // profileResult = await fetchy(`api/profile/${username}`, "GET", { query });
-    profileResult = await fetchy(`api/profile/${currentUsername}$`, "GET", { query });
+    profileResult = await fetchy(`api/profile/${currentUsername.value}`, "GET");
 
     console.log("getProfile, profileResult=", profileResult);
   } catch (_) {
@@ -57,12 +59,25 @@ onBeforeMount(async () => {
   loaded.value = true;
 });
 
+const props = defineProps(["profile"]);
+console.log("props=", props);
+const content = ref(await props.profile);
+console.log("content=", content);
+const emit = defineEmits(["editProfile", "refreshProfile"]);
+
 // Function to update the profile.
 // Implement your API call here to save changes to the backend.
-const updateProfile = async () => {
-  // Placeholder logic
-  console.log("Update the profile:", profile.value);
-  // Here you'd make your API call to save the updated profile details.
+const editProfile = async (content: string) => {
+  // try {
+  //   console.log("editProfile api/profile/${props.profile._id}=", props.profile._id);
+  //   await fetchy(`api/profile/${props.profile._id}`, "PATCH", { body: { update: { content: content } } });
+  // } catch (e) {
+  //   return;
+  // }
+  // // TODO add the emit to the component
+  // emit("editProfile");
+  // emit("refreshProfile");
+  return;
 };
 </script>
 
@@ -71,6 +86,7 @@ const updateProfile = async () => {
     <h2>Your Profile:</h2>
   </section>
 
+  <!-- display the profile -->
   <section v-if="profile">
     <div class="row">
       <div class="headshot-container">
@@ -100,19 +116,37 @@ const updateProfile = async () => {
     <div class="row">
       <div><strong>Identity:</strong> {{ profile.identity }}</div>
     </div>
+  </section>
 
-    <section v-if="isLoggedIn">
-      <h2>Edit Profile:</h2>
-    </section>
+  <!-- Edit the profile -->
+  <section v-if="isLoggedIn">
+    <h2>Edit Profile:</h2>
+  </section>
 
-    <form @submit.prevent="updateProfile">
-      <div class="row">
-        <label>
+  <section v-if="isLoggedIn">
+    <form @submit.prevent="editProfile">
+      <form @submit.prevent="editProfile(content)">
+        <p class="user">{{ props.profile.user }}</p>
+        <textarea id="content" v-model="content" placeholder="Create a post!??" required> </textarea>
+        <div class="base">
+          <menu>
+            <li><button class="btn-small pure-button-primary pure-button" type="submit">Save</button></li>
+            <li><button class="btn-small pure-button" @click="emit('editProfile')">Cancel</button></li>
+          </menu>
+          <p v-if="props.profile.dateCreated !== props.profile.dateUpdated" class="timestamp">Edited on: {{ formatDate(props.profile.dateUpdated) }}</p>
+          <p v-else class="timestamp">Created on: {{ formatDate(props.profile.dateCreated) }}</p>
+        </div>
+      </form>
+
+      <!-- 
+        <div class="row">
+
+<label>
           Username:
-          <p class="user">{{ profile.username }}</p>
-        </label>
+          <p class="user">{{ currentUsername.value }}</p>
+        </label> -->
 
-        <label>
+      <!-- <label>
           Nickname:
           <input type="text" v-model="profile.nickname" placeholder="Nickname" required />
         </label>
@@ -147,8 +181,8 @@ const updateProfile = async () => {
         <label>
           User ID:
           <input type="text" v-model="profile.user" placeholder="User ID" disabled />
-        </label>
-      </div>
+        </label> 
+      </div>-->
 
       <!-- Not displaying _id as it's typically a database identifier, and shouldn't be editable -->
 
