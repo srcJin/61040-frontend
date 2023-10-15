@@ -8,17 +8,17 @@ export const useProfileStore = defineStore(
       return await fetchy(`api/profile/${username}`, "GET");
     };
 
-    const createProfileByUsername = async (username: string, nickname: string, email: string, headshotUrl?: string, identity?: string[], role?: string) => {
-      return await fetchy(`api/profile/${username}`, "POST", {
-        body: {
-          nickname,
-          email,
-          headshotUrl,
-          identity,
-          role,
-        },
-      });
-    };
+    // const createProfileByUsername = async (username: string, nickname: string, email: string, headshotUrl?: string, identity?: string[], role?: string) => {
+    //   return await fetchy(`api/profile/${username}`, "POST", {
+    //     body: {
+    //       nickname,
+    //       email,
+    //       headshotUrl,
+    //       identity,
+    //       role,
+    //     },
+    //   });
+    // };
 
     const updateProfileByUsername = async (username: string, patch: BodyT) => {
       return await fetchy(`api/profile/${username}`, "PATCH", { body: { update: patch } });
