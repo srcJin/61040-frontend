@@ -4,20 +4,17 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
+const { isLoggedIn } = storeToRefs(useUserStore());
+
+const { currentUsername } = storeToRefs(useUserStore());
+
 const loaded = ref(false);
-const editing = ref("");
-// let profiles = ref<Record<string, string>>();
+let profiles = ref<Record<string, string>>();
+let editing = ref("");
+
 let username = ref("");
 let password = ref("");
 
-const props = defineProps({
-  profile: Object,
-});
-console.log("props=", props);
-const content = ref(await props.profile);
-console.log("content=", content);
-const emit = defineEmits(["editProfile", "refreshProfile"]);
 // Sample profile data
 // let profile = ref({
 //   username: "hello",
@@ -32,6 +29,20 @@ const emit = defineEmits(["editProfile", "refreshProfile"]);
 //   user: "651c889c758a0dd39bfecff3",
 //   _id: "65281e5517086c41a447c417",
 // });
+
+let initProfile = ref({
+  username: "loading...",
+  dateCreated: "loading...",
+  dateUpdated: "loading...",
+  email: "loading...",
+  headshotUrl: "",
+  identity: "loading...",
+  lastLocation: "loading...",
+  nickname: "loading...",
+  role: "loading...",
+  user: "loading...",
+  _id: "loading...",
+});
 
 async function getProfile(username: string) {
   // const thisUsername: string = currentUsername;
@@ -49,150 +60,61 @@ async function getProfile(username: string) {
     console.log("getProfile, error");
     return;
   }
-  profile.value = profileResult;
+  initProfile.value = profileResult;
 }
+
+// function updateEditing(id: string) {
+//   editing.value = id;
+// }
 
 onBeforeMount(async () => {
   await getProfile("hello");
   loaded.value = true;
 });
-
-// Function to update the profile.
-// Implement your API call here to save changes to the backend.
-const editProfile = async (content: string) => {
-  // try {
-  //   console.log("editProfile api/profile/${props.profile._id}=", props.profile._id);
-  //   await fetchy(`api/profile/${props.profile._id}`, "PATCH", { body: { update: { content: content } } });
-  // } catch (e) {
-  //   return;
-  // }
-  // // TODO add the emit to the component
-  // emit("editProfile");
-  // emit("refreshProfile");
-  return;
-};
 </script>
 
 <template>
-  <section v-if="isLoggedIn">
-    <h2>Your Profile:</h2>
+  <section>
+    <div class="row">
+      <template v-if="isLoggedIn">
+        <h2>Your Profile:</h2>
+      </template>
+      <template v-else>
+        <h2>You are not logged in.</h2>
+      </template>
+    </div>
   </section>
 
-  <!-- display the profile -->
-  <section v-if="profile">
+  <section v-if="initProfile">
     <div class="row">
       <div class="headshot-container">
-        <div><img class="headshot" :src="profile.headshotUrl" alt="Profile headshot" v-if="profile.headshotUrl" /></div>
+        <div><img class="headshot" :src="initProfile.headshotUrl" alt="Profile headshot" v-if="initProfile.headshotUrl" /></div>
       </div>
     </div>
 
     <div class="row">
       <!-- <div><strong>User ID:</strong> {{ profile.userId }}</div> -->
-      <div><strong>Nickname:</strong> {{ profile.nickname }}</div>
+      <div><strong>Nickname:</strong> {{ initProfile.nickname }}</div>
     </div>
 
     <!-- Second Row -->
     <div class="row">
       <!-- <div><strong>Profile ID:</strong> {{ profile.profileId }}</div> -->
-      <div><strong>Email:</strong> {{ profile.email }}</div>
+      <div><strong>Email:</strong> {{ initProfile.email }}</div>
     </div>
 
     <div class="row">
-      <div><strong>Role:</strong> {{ profile.role }}</div>
+      <div><strong>Role:</strong> {{ initProfile.role }}</div>
     </div>
 
     <div class="row">
-      <div><strong>lastLocation:</strong> {{ profile.lastLocation }}</div>
+      <div><strong>lastLocation:</strong> {{ initProfile.lastLocation }}</div>
     </div>
 
     <div class="row">
-      <div><strong>Identity:</strong> {{ profile.identity }}</div>
+      <div><strong>Identity:</strong> {{ initProfile.identity }}</div>
     </div>
   </section>
-
-  <!-- Edit the profile -->
-  <!-- <section v-if="isLoggedIn">
-    <h2>Edit Profile:</h2>
-  </section>
-
-  <section v-if="isLoggedIn">
-    <form @submit.prevent="editProfile">
-      <form @submit.prevent="editProfile(content)">
-        <p class="user">{{ props.profile.user }}</p>
-        <textarea id="content" v-model="content" placeholder="Create a post!??" required> </textarea>
-        <div class="base">
-          <menu>
-            <li><button class="btn-small pure-button-primary pure-button" type="submit">Save</button></li>
-            <li><button class="btn-small pure-button" @click="emit('editProfile')">Cancel</button></li>
-          </menu>
-          <p v-if="props.profile.dateCreated !== props.profile.dateUpdated" class="timestamp">Edited on: {{ formatDate(props.profile.dateUpdated) }}</p>
-          <p v-else class="timestamp">Created on: {{ formatDate(props.profile.dateCreated) }}</p>
-        </div>
-      </form>
-
-        <div class="row">
-
-<label>
-          Username:
-          <p class="user">{{ currentUsername.value }}</p>
-        </label> -->
-
-  <!-- <label>
-          Nickname:
-          <input type="text" v-model="profile.nickname" placeholder="Nickname" required />
-        </label>
-      </div>
-
-      <div class="row">
-        <label>
-          Headshot URL:
-          <input type="text" v-model="profile.headshotUrl" placeholder="Headshot URL" />
-        </label>
-        <label>
-          Email:
-          <input type="email" v-model="profile.email" placeholder="Email" required />
-        </label>
-      </div>
-      <div class="row">
-        <label>
-          Identity:
-          <input type="text" v-model="profile.identity" placeholder="Identity" />
-        </label>
-        <label>
-          Last Location:
-          <input type="text" v-model="profile.lastLocation" placeholder="Last Location" disabled />
-        </label>
-      </div>
-      <div class="row">
-        <label>
-          Role:
-          <input type="text" v-model="profile.role" placeholder="Role" />
-        </label>
-
-        <label>
-          User ID:
-          <input type="text" v-model="profile.user" placeholder="User ID" disabled />
-        </label> 
-      </div>-->
-
-  <!-- Not displaying _id as it's typically a database identifier, and shouldn't be editable -->
-
-  <!-- Update the timestamp -->
-  <!-- disable for now because the date type -->
-
-  <!-- <p v-if="profile.dateCreated !== profile.dateUpdated" class="timestamp">Edited on: {{ formatDate(profile.dateUpdated) }}</p>
-        <p v-else class="timestamp">Created on: {{ formatDate(profile.dateCreated) }}</p> -->
-  <!--  
-    </form>
-  </section> -->
-
-  <div class="row">
-    <!-- <div class="base"> -->
-    <menu>
-      <button class="btn-small pure-button-primary pure-button" type="submit">Update</button>
-    </menu>
-    <!-- </div> -->
-  </div>
 </template>
 
 <style scoped>

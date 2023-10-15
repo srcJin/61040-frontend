@@ -1,0 +1,149 @@
+<script setup lang="ts">
+import { useUserStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
+const { isLoggedIn } = storeToRefs(useUserStore());
+const { currentUsername } = storeToRefs(useUserStore());
+
+let profile = ref({
+  username: "hello",
+  dateCreated: "2023-10-12T16:27:01.885Z",
+  dateUpdated: "2023-10-12T16:48:16.379Z",
+  email: "ffffd@me.co",
+  headshotUrl: "https://robohash.org/hello",
+  identity: "farmer",
+  lastLocation: "[5,5]",
+  nickname: "new nickname",
+  role: "user",
+  user: "651c889c758a0dd39bfecff3",
+  _id: "65281e5517086c41a447c417",
+});
+
+const updateProfile = async () => {
+  console.log("Update the profile:", profile.value);
+  // API call to save the updated profile details.
+};
+</script>
+
+<template>
+  <section v-if="isLoggedIn">
+    <h2>Edit Profile:</h2>
+  </section>
+
+  <form @submit.prevent="updateProfile">
+    <div class="row">
+      <label>
+        Username:
+        <p class="user">{{ profile.username }}</p>
+      </label>
+      <label>
+        Nickname:
+        <input type="text" v-model="profile.nickname" placeholder="Nickname" required />
+      </label>
+    </div>
+    <div class="row">
+      <label>
+        Headshot URL:
+        <input type="text" v-model="profile.headshotUrl" placeholder="Headshot URL" />
+      </label>
+      <label>
+        Email:
+        <input type="email" v-model="profile.email" placeholder="Email" required />
+      </label>
+    </div>
+    <div class="row">
+      <label>
+        Identity:
+        <input type="text" v-model="profile.identity" placeholder="Identity" />
+      </label>
+      <label>
+        Last Location:
+        <input type="text" v-model="profile.lastLocation" placeholder="Last Location" disabled />
+      </label>
+    </div>
+    <div class="row">
+      <label>
+        Role:
+        <input type="text" v-model="profile.role" placeholder="Role" />
+      </label>
+      <label>
+        User ID:
+        <input type="text" v-model="profile.user" placeholder="User ID" disabled />
+      </label>
+    </div>
+    <div class="row">
+      <menu>
+        <button class="btn-small pure-button-primary pure-button" type="submit">Update</button>
+      </menu>
+    </div>
+  </form>
+</template>
+<style scoped>
+/* Styles remain largely unchanged; only class names might need slight adjustments if you wish. */
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+section,
+p,
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+
+article {
+  background-color: var(--base-bg);
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1em;
+}
+
+.profiles {
+  padding: 1em;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 60em;
+}
+
+.row > div,
+.row > label {
+  flex: 1;
+  /* This ensures each child of .row takes up equal space */
+  display: flex;
+  /* Makes label and its children flex items */
+  align-items: center;
+  /* Vertically center aligns items */
+  justify-content: space-between;
+  /* Separates label and input */
+  margin: 0 0.5em;
+  /* Some margin for spacing */
+}
+
+.headshot-container {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.headshot {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  /* Makes it circular */
+  border: 1px solid #d1d1d1;
+  /* Adds a border around the image */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Optional shadow for depth */
+  object-fit: cover;
+  /* Ensures the image is resized properly within the constraints */
+}
+</style>

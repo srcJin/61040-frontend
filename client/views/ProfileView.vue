@@ -3,7 +3,10 @@ import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
-import profileParent from "@/components/Profile/profileParent.vue";
+// import profileParent from "@/components/Profile/profileParent.vue";
+
+import EditProfile from "../components/Profile/EditProfile.vue";
+import ViewProfile from "../components/Profile/ViewProfile.vue";
 
 // import ViewProfile from "@/components/Profile/ViewProfile.vue";
 
@@ -26,8 +29,7 @@ async function delete_() {
     <h1>Profile for {{ currentUsername }}</h1>
     <button class="pure-button pure-button-primary" @click="logout">Logout</button>
     <button class="button-error pure-button" @click="delete_">Delete User</button>
-    <!-- <ViewProfile /> -->
-    <profileParent />
-    <!-- <ProfileComponent /> -->
+    <ViewProfile />
+    <EditProfile />
   </main>
 </template>
