@@ -2,8 +2,9 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, User, WebSession } from "./app";
+import { Friend, Post, Profile, User, WebSession } from "./app";
 import { PostDoc, PostOptions } from "./concepts/post";
+import { ProfileDoc } from "./concepts/profile";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
 import Responses from "./responses";
@@ -55,6 +56,54 @@ class Routes {
   async logOut(session: WebSessionDoc) {
     WebSession.end(session);
     return { msg: "Logged out!" };
+  }
+
+  // Profile[User] routes
+  // TA ed
+  // Syncronized between user and profile
+  // Get Profile by Username
+  @Router.get("/profile/:username")
+  async getProfile(username: string) {
+    const user = await User.getUserByUsername(username);
+    // console.log("id=", user._id);
+    return await Profile.getByUser(user._id);
+  }
+
+  // Create Profile for a User by Username
+  @Router.post("/profile/:username")
+  async createProfileByUsername(username: string, nickname: string, email: string, headshotUrl?: string, identity?: string[], role?: string) {
+    const id = (await User.getUserByUsername(username))._id;
+    const created = await Profile.create(id, nickname, email, headshotUrl, identity, role);
+    return { msg: created.msg, profile: await created.profile };
+  }
+
+  // Update Profile of a User by Username
+  @Router.patch("/profile/:username")
+  async updateProfileByUsername(username: string, update: Partial<ProfileDoc>) {
+    const user = (await User.getUserByUsername(username))._id;
+    // await Profile.isUser(id, id); // Verifying if the profile belongs to the user
+    return await Profile.update(user, update);
+  }
+
+  // Delete Profile of a User by Username
+  @Router.delete("/profile/:username")
+  async deleteProfileByUsername(username: string) {
+    const user = (await User.getUserByUsername(username))._id;
+    return Profile.delete(user);
+  }
+
+  // Get User Location by Username
+  @Router.get("/profile/:username/location")
+  async getUserLocationByUsername(username: string) {
+    const user = await User.getUserByUsername(username); // Assuming you have a method to get user by username
+    return { location: await Profile.getUserLocation(user._id) };
+  }
+
+  // Update User Location
+  @Router.patch("/profile/:username/location")
+  async updateUserLocationByUsername(username: string, location: number[]) {
+    const user = await User.getUserByUsername(username);
+    return await Profile.updateLocation(user._id, location);
   }
 
   @Router.get("/posts")
