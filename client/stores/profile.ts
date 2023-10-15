@@ -40,7 +40,7 @@ export const useProfileStore = defineStore(
 
     return {
       getProfileByUsername,
-      createProfileByUsername,
+      // createProfileByUsername,
       updateProfileByUsername,
       deleteProfileByUsername,
       getUserLocationByUsername,
