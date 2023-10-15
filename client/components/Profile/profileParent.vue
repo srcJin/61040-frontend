@@ -11,17 +11,27 @@ const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
 let editing = ref("");
 let searchAuthor = ref("");
+let profile = ref("");
 
-async function getPosts(author?: string) {
-  let query: Record<string, string> = author !== undefined ? { author } : {};
-  let postResults;
+const { currentUsername } = storeToRefs(useUserStore());
+
+async function getProfile(username: string) {
+  // const thisUsername: string = currentUsername;
+  await console.log("currentUsername", currentUsername.value);
+
+  let query: Record<string, string> = username !== undefined ? { username } : {};
+  let profileResult;
   try {
-    postResults = await fetchy("api/posts", "GET", { query });
+    console.log("query=", query);
+    // profileResult = await fetchy(`api/profile/${username}`, "GET", { query });
+    profileResult = await fetchy(`api/profile/${currentUsername.value}`, "GET");
+
+    console.log("getProfile, profileResult=", profileResult);
   } catch (_) {
+    console.log("getProfile, error");
     return;
   }
-  searchAuthor.value = author ? author : "";
-  posts.value = postResults;
+  profile.value = profileResult;
 }
 
 function updateEditing(id: string) {
@@ -29,26 +39,26 @@ function updateEditing(id: string) {
 }
 
 onBeforeMount(async () => {
-  await getPosts();
+  await getProfile("hello");
   loaded.value = true;
 });
 </script>
 
 <template>
   <section v-if="isLoggedIn">
+    <div class="row">
+      <!-- <h2 v-else>Profile of {{ searchAuthor }}:</h2> -->
+      <ViewProfile @getProfileByUser="getProfile" />
+    </div>
+  </section>
 
-  <div class="row">
-    <h2 v-else>Profile of {{ searchAuthor }}:</h2>
-    <ViewProfile @getProfileByAuthor="getPosts" />
-  </div>
-
-  <section class="posts" v-if="loaded && posts.length !== 0">
-    <article v-for="post in posts" :key="post._id">
+  <section class="profile" v-if="loaded && profile.length !== 0">
+    <!-- <article v-for="post in posts" :key="post._id">
       <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
       <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
-    </article>
+    </article> -->
   </section>
-  <p v-else-if="loaded">No posts found</p>
+  <p v-else-if="loaded">No profile found</p>
   <p v-else>Loading...</p>
 </template>
 
@@ -75,7 +85,7 @@ article {
   padding: 1em;
 }
 
-.posts {
+.profile {
   padding: 1em;
 }
 
