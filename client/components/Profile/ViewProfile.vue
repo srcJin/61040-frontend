@@ -17,19 +17,19 @@ let username = ref("");
 let password = ref("");
 
 // Sample profile data
-// let profile = ref({
-//   username: "hello",
-//   dateCreated: "2023-10-12T16:27:01.885Z",
-//   dateUpdated: "2023-10-12T16:48:16.379Z",
-//   email: "ffffd@me.co",
-//   headshotUrl: "https://robohash.org/hello",
-//   identity: "farmer",
-//   lastLocation: "[5,5]",
-//   nickname: "new nickname",
-//   role: "user",
-//   user: "651c889c758a0dd39bfecff3",
-//   _id: "65281e5517086c41a447c417",
-// });
+let profile = ref({
+  username: "hello",
+  dateCreated: "2023-10-12T16:27:01.885Z",
+  dateUpdated: "2023-10-12T16:48:16.379Z",
+  email: "ffffd@me.co",
+  headshotUrl: "https://robohash.org/hello",
+  identity: "farmer",
+  lastLocation: "[5,5]",
+  nickname: "new nickname",
+  role: "user",
+  user: "651c889c758a0dd39bfecff3",
+  _id: "65281e5517086c41a447c417",
+});
 
 async function getProfile(username: string) {
   // const thisUsername: string = currentUsername;
