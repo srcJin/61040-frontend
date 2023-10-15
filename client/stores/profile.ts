@@ -8,6 +8,7 @@ export const useProfileStore = defineStore(
       return await fetchy(`api/profile/${username}`, "GET");
     };
 
+    // TODO this function has type error
     // const createProfileByUsername = async (username: string, nickname: string, email: string, headshotUrl?: string, identity?: string[], role?: string) => {
     //   return await fetchy(`api/profile/${username}`, "POST", {
     //     body: {
