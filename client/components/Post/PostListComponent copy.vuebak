@@ -27,17 +27,6 @@ async function getPosts(author?: string) {
   posts.value = postResults;
 }
 
-async function getLikes(post?: string) {
-  let likesResults;
-  try {
-    likesResults = await fetchy("api/likes" + post, "GET");
-  } catch (_) {
-    return;
-  }
-  searchAuthor.value = author ? author : "";
-  posts.value = postResults;
-}
-
 function updateEditing(id: string) {
   editing.value = id;
 }

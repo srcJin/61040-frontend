@@ -25,14 +25,15 @@ onBeforeMount(async () => {
   <header>
     <nav>
       <div class="title">
-        <img src="@/assets/images/logo.svg" />
         <RouterLink :to="{ name: 'Home' }">
-          <h1>Social Media App</h1>
+          <img src="@/assets/images/weehive_logo.png" />
+          <!-- <h1>WeeHive</h1> -->
         </RouterLink>
       </div>
       <ul>
         <li>
           <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
+          <RouterLink :to="{ name: 'Plaza' }" :class="{ underline: currentRouteName == 'Plaza' }"> Plaza </RouterLink>
           <RouterLink :to="{ name: 'Map' }" :class="{ underline: currentRouteName == 'Map' }"> Map </RouterLink>
         </li>
         <li v-if="isLoggedIn">
@@ -56,7 +57,8 @@ onBeforeMount(async () => {
 
 nav {
   padding: 1em 2em;
-  background-color: lightgray;
+  /* background-color: lightgray; */
+  background-color: var(--theme-color);
   display: flex;
   align-items: center;
 }
@@ -73,7 +75,7 @@ h1 {
 }
 
 img {
-  height: 2em;
+  height: 8em;
 }
 
 a {

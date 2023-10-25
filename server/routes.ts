@@ -2,8 +2,8 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Friend, Post, Profile, User, WebSession } from "./app";
-import { PostDoc, PostOptions } from "./concepts/post";
+import { Friend, Like, Post, Profile, User, WebSession } from "./app";
+import { PostDoc, PostFilter, PostOptions, PostType } from "./concepts/post";
 import { ProfileDoc } from "./concepts/profile";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -106,22 +106,32 @@ class Routes {
     return await Profile.updateLocation(user._id, location);
   }
 
+  // Posts routes
+
   @Router.get("/posts")
-  async getPosts(author?: string) {
-    let posts;
+  // get posts can search by author, title, timeframe and tags
+  // now it has many ifs, will try to make it more modularized
+  async getPosts(author?: string, title?: string) {
+    const filter: PostFilter = {};
+
     if (author) {
       const id = (await User.getUserByUsername(author))._id;
-      posts = await Post.getByAuthor(id);
-    } else {
-      posts = await Post.getPosts({});
+      filter.authorId = id;
     }
+
+    if (title) {
+      filter.title = title;
+    }
+
+    const posts = await Post.getPosts(filter);
+
     return Responses.posts(posts);
   }
 
   @Router.post("/posts")
-  async createPost(session: WebSessionDoc, content: string, options?: PostOptions) {
-    const user = WebSession.getUser(session);
-    const created = await Post.create(user, content, options);
+  async createPost(session: WebSessionDoc, title: string, content: string, visibility: string, type?: PostType, options?: PostOptions) {
+    const author = WebSession.getUser(session);
+    const created = await Post.create(author, title, content, type || "article", options);
     return { msg: created.msg, post: await Responses.post(created.post) };
   }
 
@@ -137,6 +147,57 @@ class Routes {
     const user = WebSession.getUser(session);
     await Post.isAuthor(user, _id);
     return Post.delete(_id);
+  }
+
+  // Like[Post] routes
+
+  // Like a post
+  @Router.post("/likes/post/:_id")
+  async addPostLike(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Like.addLike(user, "post", _id);
+  }
+
+  // Unlike a post
+  @Router.delete("/likes/post/:_id")
+  async removePostLike(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Like.removeLike(user, "post", _id);
+  }
+
+  // Like a reply
+  @Router.post("/likes/reply/:_id")
+  async addReplyLike(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Like.addLike(user, "reply", replyId);
+  }
+
+  // Unlike a reply
+  @Router.delete("/likes/reply/:_id")
+  async removeReplyLike(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Like.removeLike(user, "reply", replyId);
+  }
+
+  // Get all likes for a user
+  @Router.get("/likes")
+  async getAllLikes(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const likedPosts = await Like.getUserLikes(user, "post");
+    const likedReplies = await Like.getUserLikes(user, "reply");
+    return { likedPosts, likedReplies };
+  }
+
+  // Get the like count for a post
+  @Router.get("/likes/post/:id/like-count")
+  async getPostLikeCount(_id: ObjectId) {
+    return { count: await Like.getLikeCount("post", _id) };
+  }
+
+  // Get the like count for a reply
+  @Router.get("/likes/reply/:id/like-count")
+  async getReplyLikeCount(_id: ObjectId) {
+    return { count: await Like.getLikeCount("reply", _id) };
   }
 
   @Router.get("/friends")

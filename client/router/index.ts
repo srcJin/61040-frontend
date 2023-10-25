@@ -6,6 +6,7 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import MapView from "../views/MapView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
+import PlazaView from "../views/PlazaView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import SettingView from "../views/SettingView.vue";
 
@@ -33,6 +34,12 @@ const router = createRouter({
       path: "/map",
       name: "Map",
       component: MapView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/plaza",
+      name: "Plaza",
+      component: PlazaView,
       meta: { requiresAuth: true },
     },
     {

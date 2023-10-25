@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
+import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
 import { fetchy } from "../../utils/fetchy";
-import { formatDate } from "@/utils/formatDate";
 
 const props = defineProps(["post"]);
 const emit = defineEmits(["editPost", "refreshPosts"]);
 const { currentUsername } = storeToRefs(useUserStore());
+
+// console.log("props", props);
 
 const deletePost = async () => {
   try {
@@ -19,8 +21,11 @@ const deletePost = async () => {
 </script>
 
 <template>
-  <p class="author">{{ props.post.author }}</p>
-  <p>{{ props.post.content }}</p>
+  <p>Title: {{ props.post.title }}</p>
+  <p class="">Author: {{ props.post.author }}</p>
+  <p>Content: {{ props.post.content }}</p>
+  <p>Type: {{ props.post.postType }}</p>
+
   <div class="base">
     <menu v-if="props.post.author == currentUsername">
       <li><button class="btn-small pure-button" @click="emit('editPost', props.post._id)">Edit</button></li>
