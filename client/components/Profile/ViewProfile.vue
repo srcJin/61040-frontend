@@ -44,14 +44,11 @@ let initProfile = ref({
   _id: "loading...",
 });
 
-async function getProfile(username: string) {
+async function getProfile() {
   // const thisUsername: string = currentUsername;
   await console.log("currentUsername", currentUsername.value);
-
-  let query: Record<string, string> = username !== undefined ? { username } : {};
   let profileResult;
   try {
-    console.log("query=", query);
     // profileResult = await fetchy(`api/profile/${username}`, "GET", { query });
     profileResult = await fetchy(`api/profile/${currentUsername.value}`, "GET");
 
