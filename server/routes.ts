@@ -1,12 +1,15 @@
-import { ObjectId } from "mongodb";
-
-import { Router, getExpressRouter } from "./framework/router";
-
-import { Friend, Like, Post, Profile, User, WebSession } from "./app";
+import { Filter, ObjectId } from "mongodb";
+import { Favorite, Like, Map, Marker, Post, Profile, Relationship, Reply, Tag, User, WebSession } from "./app";
+import { MapDoc } from "./concepts/map";
+import { MarkerDoc, MarkerType } from "./concepts/marker";
 import { PostDoc, PostFilter, PostOptions, PostType } from "./concepts/post";
 import { ProfileDoc } from "./concepts/profile";
+import { RelType } from "./concepts/relationship";
+import { ReplyType } from "./concepts/reply";
+import { TagDoc } from "./concepts/tag";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
+import { Router, getExpressRouter } from "./framework/router";
 import Responses from "./responses";
 
 class Routes {
@@ -149,6 +152,304 @@ class Routes {
     return Post.delete(_id);
   }
 
+  // @Router.get("/friends")
+  // async getFriends(session: WebSessionDoc) {
+  //   const user = WebSession.getUser(session);
+  //   return await User.idsToUsernames(await Friend.getFriends(user));
+  // }
+
+  // @Router.delete("/friends/:friend")
+  // async removeFriend(session: WebSessionDoc, friend: string) {
+  //   const user = WebSession.getUser(session);
+  //   const friendId = (await User.getUserByUsername(friend))._id;
+  //   return await Friend.removeFriend(user, friendId);
+  // }
+
+  // @Router.get("/friend/requests")
+  // async getRequests(session: WebSessionDoc) {
+  //   const user = WebSession.getUser(session);
+  //   return await Responses.friendRequests(await Friend.getRequests(user));
+  // }
+
+  // @Router.post("/friend/requests/:to")
+  // async sendFriendRequest(session: WebSessionDoc, to: string) {
+  //   const user = WebSession.getUser(session);
+  //   const toId = (await User.getUserByUsername(to))._id;
+  //   return await Friend.sendRequest(user, toId);
+  // }
+
+  // @Router.delete("/friend/requests/:to")
+  // async removeFriendRequest(session: WebSessionDoc, to: string) {
+  //   const user = WebSession.getUser(session);
+  //   const toId = (await User.getUserByUsername(to))._id;
+  //   return await Friend.removeRequest(user, toId);
+  // }
+
+  // @Router.put("/friend/accept/:from")
+  // async acceptFriendRequest(session: WebSessionDoc, from: string) {
+  //   const user = WebSession.getUser(session);
+  //   const fromId = (await User.getUserByUsername(from))._id;
+  //   return await Friend.acceptRequest(fromId, user);
+  // }
+
+  // @Router.put("/friend/reject/:from")
+  // async rejectFriendRequest(session: WebSessionDoc, from: string) {
+  //   const user = WebSession.getUser(session);
+  //   const fromId = (await User.getUserByUsername(from))._id;
+  //   return await Friend.rejectRequest(fromId, user);
+  // }
+
+  // Reply[Post] routes
+
+  @Router.get("/replies/:_postId")
+  async getRepliesByPostId(_postId: ObjectId) {
+    console.log("getRepliesByPostId, relatedPost=", _postId);
+    return await Reply.getRepliesByPostId(_postId);
+  }
+
+  @Router.post("/replies/:_postId")
+  async createReply(session: WebSessionDoc, content: string, replyType: ReplyType, _postId: ObjectId) {
+    console.log("createReply, relatedPost=", _postId);
+    const author = WebSession.getUser(session);
+    const created = await Reply.create(author, content, replyType || "comment", _postId);
+    return { msg: created.msg, reply: created.reply };
+  }
+
+  @Router.patch("/replies/:_postId/:_replyId") // here :id is the post id, :replyId is the reply id
+  async updateReply(session: WebSessionDoc, _postId: ObjectId, _replyId: ObjectId, update: Partial<PostDoc>) {
+    const user = WebSession.getUser(session);
+    await Reply.isAuthor(user, _replyId);
+    return await Reply.update(_replyId, update);
+  }
+
+  @Router.delete("/replies/:_postId/:_replyId")
+  async deleteReply(session: WebSessionDoc, _postId: ObjectId, _replyId: ObjectId) {
+    const user = WebSession.getUser(session);
+    await Reply.isAuthor(user, _replyId);
+    return Reply.delete(_replyId);
+  }
+
+  // follow target user
+  @Router.post("/relationships/follow/:user2")
+  async follow(session: WebSessionDoc, user2: string) {
+    const user1Id = WebSession.getUser(session);
+    const user2Id = (await User.getUserByUsername(user2))._id;
+    return await Relationship.follow(user1Id, user2Id);
+  }
+
+  @Router.get("/relationships")
+  async getRelationships(session: WebSessionDoc, type?: RelType) {
+    // You can pass type as a query parameter
+    const user = WebSession.getUser(session);
+    // for debugging purpose, we just use follow
+    return { msg: "Following users:", list: await Relationship.getRelationships(user, RelType.Follow) };
+  }
+
+  @Router.delete("/relationships/:user2")
+  async removeRelationship(session: WebSessionDoc, user2: string, relType: RelType) {
+    const user1Id = WebSession.getUser(session);
+    const user2Id = (await User.getUserByUsername(user2))._id;
+    return await Relationship.removeRelationship(user1Id, user2Id, relType);
+  }
+
+  @Router.get("/relationships/requests")
+  async getRequests(session: WebSessionDoc, relType: RelType) {
+    const user = WebSession.getUser(session);
+    const requests = await Relationship.getRequests(user, relType);
+    return {
+      requests,
+    };
+  }
+
+  @Router.post("/relationships/requests/:to")
+  async sendRequest(session: WebSessionDoc, to: string, relType: RelType) {
+    // relType can be passed as a query parameter
+    const user = WebSession.getUser(session);
+    const toId = (await User.getUserByUsername(to))._id;
+    return await Relationship.sendRequest(user, toId, relType);
+  }
+
+  @Router.delete("/relationships/requests/:to")
+  async removeRequest(session: WebSessionDoc, to: string, relType: RelType) {
+    const user = WebSession.getUser(session);
+    const toId = (await User.getUserByUsername(to))._id;
+    return await Relationship.removeRequest(user, toId, relType);
+  }
+
+  @Router.put("/relationships/accept/:from")
+  async acceptRequest(session: WebSessionDoc, from: string, relType: RelType) {
+    // relType can be passed as a query parameter
+    const user = WebSession.getUser(session);
+    const fromId = (await User.getUserByUsername(from))._id;
+    return await Relationship.acceptRequest(fromId, user, relType);
+  }
+
+  @Router.put("/relationships/reject/:from")
+  async rejectRequest(session: WebSessionDoc, from: string, relType: RelType) {
+    const user = WebSession.getUser(session);
+    const fromId = (await User.getUserByUsername(from))._id;
+    return await Relationship.rejectRequest(fromId, user, relType);
+  }
+
+  // Map routes
+  // Map concept is different, need ask TA
+  // we are using an API to draw an app at the front end
+  // So the data the backend should provide is what the API need
+  // functions, like zoom, will only rely on frontend
+  // will need to check the API (probably leaflet) to better understand this part.
+
+  // Map routes
+  @Router.post("/map")
+  async createMap(session?: WebSessionDoc, initialState?: Partial<MapDoc>) {
+    const userId = session ? WebSession.getUser(session) : undefined;
+
+    // If the session has a userId, set it to the initialState
+    if (userId) {
+      initialState = { ...initialState, user: userId };
+    }
+
+    // Use the createMap function
+    await Map.createMap(initialState);
+    return { msg: "Map successfully created!" };
+  }
+
+  @Router.get("/map/state")
+  async getMapState(session?: WebSessionDoc) {
+    const userId = session ? WebSession.getUser(session) : undefined;
+    return await Map.getMapByUser(userId);
+  }
+
+  @Router.patch("/map/centerpoint")
+  async setCenterPoint(lng: number, lat: number, session?: WebSessionDoc) {
+    const userId = session ? WebSession.getUser(session) : undefined;
+    await Map.setCenterPoint([lng, lat], userId);
+    return { msg: "Center point updated!" };
+  }
+
+  @Router.patch("/map/zoomlevel")
+  async setZoomLevel(zoom: number, session?: WebSessionDoc) {
+    const userId = session ? WebSession.getUser(session) : undefined;
+    await Map.setZoomLevel(zoom, userId);
+    return { msg: "Zoom level updated!" };
+  }
+
+  @Router.post("/map/layer")
+  async addLayer(layer: string, session?: WebSessionDoc) {
+    const userId = session ? WebSession.getUser(session) : undefined;
+    await Map.addLayer(layer, userId);
+    return { msg: "Layer added!" };
+  }
+
+  @Router.delete("/map/layer")
+  async removeLayer(layer: string, session?: WebSessionDoc) {
+    const userId = session ? WebSession.getUser(session) : undefined;
+    await Map.removeLayer(layer, userId);
+    return { msg: "Layer removed!" };
+  }
+
+  @Router.patch("/map/theme")
+  async setTheme(theme: string, session?: WebSessionDoc) {
+    const userId = session ? WebSession.getUser(session) : undefined;
+    await Map.setTheme(theme, userId);
+    return { msg: "Map theme updated!" };
+  }
+
+  @Router.post("/markers")
+  // Create a marker
+  async createMarker(session: WebSessionDoc, location: [number, number], itemId: ObjectId, type: MarkerType, info?: string, postIds?: ObjectId[]) {
+    // const user = WebSession.getUser(session);
+    // if used user, we need some authorization checks here depending on your requirements
+    // @TODO, ask TA
+    const created = await Marker.create(location, itemId, type, info, postIds);
+    return { msg: created.msg, marker: created.marker };
+  }
+
+  // Marker[Map] routes
+  @Router.get("/markers") //
+  // Retrieve markers with optional filtering by location and zoom level
+  async getMarkers(session: WebSessionDoc, itemId?: ObjectId, type?: MarkerType, location?: [number, number], zoomLevel?: number): Promise<{ markers: MarkerDoc[] }> {
+    let markers: MarkerDoc[] = [];
+
+    const filter: Filter<MarkerDoc> = {};
+
+    // If provide itemId , add it to the filter
+    if (itemId) {
+      filter.itemId = itemId;
+    }
+    // If provide type, add it to the filter
+    if (type) {
+      filter.type = type;
+    }
+    // If provide location and zoomLevel, filter markers in range
+    // notice: filtering by range happens before applying the filter
+    if (location && zoomLevel) {
+      markers = await Marker.getMarkersInRange(location, zoomLevel, filter);
+    } else {
+      // Otherwise, retrieve markers based on the filter
+      markers = await Marker.getMarkers(filter);
+    }
+
+    return { markers };
+  }
+
+  @Router.patch("/markers/:_id")
+  // Update an existing marker
+  async updateMarker(session: WebSessionDoc, _id: ObjectId, update: Partial<MarkerDoc>) {
+    // const user = WebSession.getUser(session);
+    // no need for check if the user is the author of the marker
+    // the operation will happen backend
+    const updated = await Marker.update(_id, update);
+    return { msg: updated.msg, marker: updated.marker };
+  }
+
+  @Router.delete("/markers/:_id")
+  // Delete an existing marker
+  async deleteMarker(session: WebSessionDoc, _id: ObjectId) {
+    // const user = WebSession.getUser(session);
+    // Add authorization checks if needed
+    const deleted = await Marker.delete(_id);
+    return { msg: deleted.msg, marker: deleted.marker };
+  }
+
+  // Favorite[Item] routes
+
+  // Add a post to the favorite list
+  @Router.post("/favorites/post/:_id")
+  async addPostToFavorites(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Favorite.addFavorite(user, "post", _id);
+  }
+
+  // Remove a post from favorites
+  @Router.delete("/favorites/post/:_id")
+  async removePostFromFavorites(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Favorite.removeFavorite(user, "post", _id);
+  }
+
+  // Favorite a reply
+  @Router.post("/favorites/reply/:_id")
+  async addReplyToFavorites(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Favorite.addFavorite(user, "reply", replyId);
+  }
+
+  // Remove a reply from favorites
+  @Router.delete("/favorites/reply/:_id")
+  async removeReplyFromFavorites(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Favorite.removeFavorite(user, "reply", replyId);
+  }
+
+  // Get all favorites for a user
+  @Router.get("/favorites")
+  async getAllFavorites(session: WebSessionDoc) {
+    const user = WebSession.getUser(session);
+    const favoritePosts = await Favorite.getFavorites(user, "post");
+    const favoriteReplies = await Favorite.getFavorites(user, "reply");
+    return { favoritePosts, favoriteReplies };
+  }
+
   // Like[Post] routes
 
   // Like a post
@@ -199,52 +500,41 @@ class Routes {
   async getReplyLikeCount(_id: ObjectId) {
     return { count: await Like.getLikeCount("reply", _id) };
   }
+  // Tags routes
 
-  @Router.get("/friends")
-  async getFriends(session: WebSessionDoc) {
-    const user = WebSession.getUser(session);
-    return await User.idsToUsernames(await Friend.getFriends(user));
+  @Router.get("/tags")
+  async getAllTags(query?: Filter<TagDoc>) {
+    return await Tag.getAllTags(query);
   }
 
-  @Router.delete("/friends/:friend")
-  async removeFriend(session: WebSessionDoc, friend: string) {
-    const user = WebSession.getUser(session);
-    const friendId = (await User.getUserByUsername(friend))._id;
-    return await Friend.removeFriend(user, friendId);
+  @Router.post("/tags")
+  async createTag(name: string) {
+    return await Tag.createTag(name);
   }
 
-  @Router.get("/friend/requests")
-  async getRequests(session: WebSessionDoc) {
-    const user = WebSession.getUser(session);
-    return await Responses.friendRequests(await Friend.getRequests(user));
+  @Router.patch("/tags/:tagId")
+  async updateTag(tagId: ObjectId, update: Partial<TagDoc>) {
+    return await Tag.updateTag(tagId, update);
   }
 
-  @Router.post("/friend/requests/:to")
-  async sendFriendRequest(session: WebSessionDoc, to: string) {
-    const user = WebSession.getUser(session);
-    const toId = (await User.getUserByUsername(to))._id;
-    return await Friend.sendRequest(user, toId);
+  @Router.delete("/tags/:tagId")
+  async deleteTag(tagId: ObjectId) {
+    return await Tag.deleteTag(tagId);
   }
 
-  @Router.delete("/friend/requests/:to")
-  async removeFriendRequest(session: WebSessionDoc, to: string) {
-    const user = WebSession.getUser(session);
-    const toId = (await User.getUserByUsername(to))._id;
-    return await Friend.removeRequest(user, toId);
+  @Router.get("/tags/:tagId/items")
+  async getItemsByTagId(tagId: ObjectId) {
+    return await Tag.getTagsByItemId(tagId);
   }
 
-  @Router.put("/friend/accept/:from")
-  async acceptFriendRequest(session: WebSessionDoc, from: string) {
-    const user = WebSession.getUser(session);
-    const fromId = (await User.getUserByUsername(from))._id;
-    return await Friend.acceptRequest(fromId, user);
+  @Router.get("/tags/:itemId/tags")
+  async getTagsByItemId(itemID: ObjectId) {
+    return await Tag.getItemsByTagId(itemID);
   }
 
-  @Router.put("/friend/reject/:from")
-  async rejectFriendRequest(session: WebSessionDoc, from: string) {
-    const user = WebSession.getUser(session);
-    const fromId = (await User.getUserByUsername(from))._id;
-    return await Friend.rejectRequest(fromId, user);
+  @Router.post("/tags/:tagId/items/:itemId")
+  async assignTagToItem(tagId: ObjectId, itemId: ObjectId) {
+    return await Tag.assignTagToItem(tagId, itemId);
   }
 }
 
