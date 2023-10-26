@@ -11,6 +11,8 @@ const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
 const { currentUsername, isLoggedIn } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
+
+// dynamic pageTitle has bug
 const { pageTitle } = useTitleStore();
 // Make sure to update the session before mounting the app in case the user is already logged in
 onBeforeMount(async () => {
@@ -25,7 +27,7 @@ onBeforeMount(async () => {
 <template>
   <header>
     <section class="titlebar">
-      <div class="titlebar-text">TitleBar {{ pageTitle }}</div>
+      <div class="titlebar-text">{{ pageTitle }}</div>
 
       <div class="titlebar-user">
         <div v-if="isLoggedIn">
@@ -50,7 +52,9 @@ onBeforeMount(async () => {
     <nav class="navbar">
       <div class="title">
         <RouterLink :to="{ name: 'Home' }">
-          <img src="@/assets/images/weehive_logo.png" class="navicon" />
+          <!-- <img src="@/assets/images/weehive_logo.png" class="navicon" /> -->
+          <div>{{ pageTitle }}</div>
+
           <!-- <h1>WeeHive</h1> -->
         </RouterLink>
       </div>
@@ -67,6 +71,13 @@ onBeforeMount(async () => {
             <div>
               <img src="@/assets/images/plaza.svg" class="navicon" />
               <p>Plaza</p>
+            </div>
+          </RouterLink>
+
+          <RouterLink :to="{ name: 'CreatePost' }" :class="{ underline: currentRouteName == 'CreatePost' }">
+            <div>
+              <img src="@/assets/images/plaza.svg" class="navicon" />
+              <p>CreatePost</p>
             </div>
           </RouterLink>
 
@@ -121,6 +132,7 @@ nav {
   background-color: var(--theme-color);
   display: flex;
   /* adjust the position of nav */
+  z-index: 1000;
 }
 
 p {
@@ -254,6 +266,7 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
   }
 
   .nav-items li {

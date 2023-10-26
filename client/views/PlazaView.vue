@@ -17,8 +17,8 @@ onMounted(() => {
   <main>
     <h1>Plaza</h1>
     <section>
-      <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1>
-      <h1 v-else>Please login!</h1>
+      <!-- <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1>
+      <h1 v-else>Please login!</h1> -->
     </section>
     <AbstractWorldmapComponent />
 

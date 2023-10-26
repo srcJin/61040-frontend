@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const useTitleStore = defineStore({
   id: "title",
   state: () => ({
-    pageTitle: "WeeHive", // Set default title to image filename
+    pageTitle: "WeeHive",
   }),
   actions: {
     setPageTitle(newTitle: string) {

@@ -33,5 +33,7 @@ export default {
 .fullscreen-map {
   height: calc(100vh - 4em); /* 100% of the viewport height */
   width: 100vw; /* 100% of the viewport width */
+  display: flex;
+  z-index: 0;
 }
 </style>

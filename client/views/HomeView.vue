@@ -3,6 +3,14 @@ import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
+
+import { useTitleStore } from "@/stores/title";
+import { onMounted } from "vue";
+const { setPageTitle } = useTitleStore();
+
+onMounted(() => {
+  setPageTitle("BlogBlog");
+});
 </script>
 
 <template>
@@ -11,8 +19,8 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
       <div class="titleText">WeeBlog</div>
     </section>
     <section>
-      <h3 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h3>
-      <h3 v-else>Please login!</h3>
+      <!-- <h3 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h3>
+      <h3 v-else>Please login!</h3> -->
     </section>
     <PostListComponent />
   </main>
