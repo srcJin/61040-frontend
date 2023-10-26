@@ -8,6 +8,9 @@
   --theme-button: white;
   --theme-color-dark: #36200a;
   --theme-button-dark: rgb(62, 62, 62);
+  --theme-bright-text: black;
+  --theme-dark-text: rgb(232, 232, 232);
+
 }
 
 button.btn-small {

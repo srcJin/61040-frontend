@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 600px; width: 800px">
+  <div class="fullscreen-map">
     <l-map ref="map" v-model:zoom="zoom" :center="[47.41322, -1.219482]">
       <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"></l-tile-layer>
     </l-map>
@@ -23,10 +23,15 @@ export default {
   },
   data() {
     return {
-      zoom: 2,
+      zoom: 3,
     };
   },
 };
 </script>
 
-<style></style>
+<style>
+.fullscreen-map {
+  height: calc(100vh - 4em); /* 100% of the viewport height */
+  width: 100vw; /* 100% of the viewport width */
+}
+</style>

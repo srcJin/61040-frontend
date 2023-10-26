@@ -8,7 +8,7 @@ import { RouterLink, RouterView, useRoute } from "vue-router";
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
-const { isLoggedIn } = storeToRefs(userStore);
+const { currentUsername, isLoggedIn } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
 
 // Make sure to update the session before mounting the app in case the user is already logged in
@@ -23,6 +23,29 @@ onBeforeMount(async () => {
 
 <template>
   <header>
+    <section class="titlebar">
+      <div class="titlebar-text">TitleBar</div>
+
+      <div class="titlebar-user">
+        <div v-if="isLoggedIn">
+          <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }">
+            <div>
+              <img src="@/assets/images/user.svg" class="navicon" />
+              <p>{{ currentUsername }}</p>
+            </div>
+          </RouterLink>
+        </div>
+        <div v-else>
+          <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }">
+            <div>
+              <img src="@/assets/images/user.svg" class="navicon" />
+              <p>Login</p>
+            </div>
+          </RouterLink>
+        </div>
+      </div>
+    </section>
+
     <nav class="navbar">
       <div class="title">
         <RouterLink :to="{ name: 'Home' }">
@@ -51,28 +74,30 @@ onBeforeMount(async () => {
             </div>
           </RouterLink>
         </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }">
-            <div>
-              <img src="@/assets/images/user.svg" class="navicon" />
-              <p>Settings</p>
-            </div>
-          </RouterLink>
-          <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }">
-            <div>
-              <img src="@/assets/images/user.svg" class="navicon" />
-              <p>Profile</p>
-            </div>
-          </RouterLink>
-        </li>
-        <li v-else>
-          <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }">
-            <div>
-              <img src="@/assets/images/user.svg" class="navicon" />
-              <p>Login</p>
-            </div>
-          </RouterLink>
-        </li>
+        <div class="navbar-user">
+          <li v-if="isLoggedIn">
+            <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }">
+              <div>
+                <img src="@/assets/images/user.svg" class="navicon" />
+                <p>Settings</p>
+              </div>
+            </RouterLink>
+            <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }">
+              <div>
+                <img src="@/assets/images/user.svg" class="navicon" />
+                <p>Profile</p>
+              </div>
+            </RouterLink>
+          </li>
+          <li v-else>
+            <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }">
+              <div>
+                <img src="@/assets/images/user.svg" class="navicon" />
+                <p>Login</p>
+              </div>
+            </RouterLink>
+          </li>
+        </div>
       </ul>
     </nav>
     <article v-if="toast !== null" class="toast" :class="toast.style">
@@ -119,11 +144,11 @@ ul {
 } */
 
 .nav-items li:hover {
-  background-color: var(--theme-color-light);
+  background-color: var(--theme-color-nav);
 }
 
 .nav-items {
-  display: flex;
+  /* display: flex; */
   /* gap: 2em;  */
   list-style-type: none;
   margin-left: auto;
@@ -142,6 +167,8 @@ ul {
 .nav-items img {
   /* adjust the size of icon */
   height: 1.5em;
+  padding-top: 0.2em;
+
   margin-bottom: 0.1em;
   align-items: center;
 }
@@ -175,11 +202,14 @@ img {
 }
 
 .nav-items div {
-  display: flex;
   flex-direction: column;
   /* Stack the icon and text vertically */
   align-items: center;
   /* Center the content horizontally */
+}
+
+.navbar-user {
+  display: block;
 }
 
 a {
@@ -190,6 +220,14 @@ a {
 
 .underline {
   text-decoration: underline;
+}
+
+.titlebar-text {
+  display: none;
+}
+
+.titlebar-user {
+  display: none;
 }
 
 /* Mobile view */
@@ -203,6 +241,7 @@ a {
     top: auto;
     /* Override the top: 0; from the desktop styles */
     background-color: var(--theme-color-nav);
+    z-index: 1;
   }
 
   .title {
@@ -217,9 +256,12 @@ a {
   }
 
   .nav-items {
-    margin-left: 0; /* Reset the margin */
-    justify-content: center; /* Centers items horizontally */
-    flex-direction: row; /* Stacks the links vertically */
+    margin-left: 0;
+    /* Reset the margin */
+    justify-content: center;
+    /* Centers items horizontally */
+    flex-direction: row;
+    /* Stacks the links vertically */
   }
 
   body {
@@ -227,6 +269,35 @@ a {
     /* Reset padding-top for mobile */
     padding-bottom: 60px;
     /* Add padding to the bottom equal to the navbar's height */
+  }
+
+  .titlebar {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--theme-color);
+    height: 4em;
+  }
+
+  .titlebar-user {
+    display: flex;
+    margin-left: auto;
+    align-items: center; /* vertically center the content of titlebar-user */
+    margin-right: 1em;
+  }
+
+  .titlebar-text {
+    display: flex;
+    margin-top: 1em;
+    font-size: 1.5em;
+    color: var(--theme-bright-text);
+    max-height: 2em;
+    margin-left: 1em;
+    justify-content: left;
+    flex-grow: 1; /* This allows it to take up available space */
+  }
+
+  .navbar-user {
+    display: none;
   }
 }
 </style>
