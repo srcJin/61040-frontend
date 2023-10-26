@@ -4,8 +4,10 @@
   --red: rgb(208, 67, 12);
   --base-bg: #f1f3f5;
   --theme-color: #ff9933;
-
-  
+  --theme-color-nav: #b3b3b3;
+  --theme-button: white;
+  --theme-color-dark: #36200a;
+  --theme-button-dark: rgb(62, 62, 62);
 }
 
 button.btn-small {
