@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTitleStore } from "@/stores/title";
 import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
@@ -10,7 +11,7 @@ const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
 const { currentUsername, isLoggedIn } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
-
+const { pageTitle } = useTitleStore();
 // Make sure to update the session before mounting the app in case the user is already logged in
 onBeforeMount(async () => {
   try {
@@ -24,7 +25,7 @@ onBeforeMount(async () => {
 <template>
   <header>
     <section class="titlebar">
-      <div class="titlebar-text">TitleBar</div>
+      <div class="titlebar-text">TitleBar {{ pageTitle }}</div>
 
       <div class="titlebar-user">
         <div v-if="isLoggedIn">
@@ -55,22 +56,24 @@ onBeforeMount(async () => {
       </div>
       <ul class="nav-items">
         <li>
-          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }">
+          <RouterLink :to="{ name: 'Map' }" :class="{ underline: currentRouteName == 'Map' }">
             <div>
-              <img src="@/assets/images/plaza.svg" class="navicon" />
-              <p>Home</p>
+              <img src="@/assets/images/map.svg" class="navicon" />
+              <p>Map</p>
             </div>
           </RouterLink>
+
           <RouterLink :to="{ name: 'Plaza' }" :class="{ underline: currentRouteName == 'Plaza' }">
             <div>
               <img src="@/assets/images/plaza.svg" class="navicon" />
               <p>Plaza</p>
             </div>
           </RouterLink>
-          <RouterLink :to="{ name: 'Map' }" :class="{ underline: currentRouteName == 'Map' }">
+
+          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }">
             <div>
-              <img src="@/assets/images/map.svg" class="navicon" />
-              <p>Map</p>
+              <img src="@/assets/images/plaza.svg" class="navicon" />
+              <p>Home</p>
             </div>
           </RouterLink>
         </li>
@@ -142,11 +145,6 @@ ul {
   width: 4em;
   text-align: center;
 } */
-
-.nav-items li:hover {
-  background-color: var(--theme-color-nav);
-}
-
 .nav-items {
   /* display: flex; */
   /* gap: 2em;  */
@@ -154,6 +152,9 @@ ul {
   margin-left: auto;
   text-align: center;
   align-items: center;
+}
+.nav-items li:hover {
+  background-color: var(--theme-color-nav);
 }
 
 .nav-items li {
@@ -253,6 +254,14 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .nav-items li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap: 20vw;
   }
 
   .nav-items {

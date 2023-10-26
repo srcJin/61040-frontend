@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import AbstractWorldmapComponent from "@/components/AbstractWorldmap/AbstractWorldmap.vue";
 import PostListComponent from "@/components/Post/PostListComponent.vue";
+import { useTitleStore } from "@/stores/title";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-
+import { onMounted } from "vue";
+const { setPageTitle } = useTitleStore();
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
+
+onMounted(() => {
+  setPageTitle("PlazaPlaza");
+});
 </script>
 
 <template>

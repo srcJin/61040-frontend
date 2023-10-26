@@ -1,4 +1,5 @@
 <script>
+// here is js, will fix to ts
 import { max, range } from "d3-array";
 import { computed } from "vue";
 import { scaleBand, scaleLinear } from "d3-scale";
