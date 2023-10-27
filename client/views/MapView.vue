@@ -1,13 +1,15 @@
 <script>
+import L from "leaflet";
+globalThis.L = L;
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LControlLayers } from "@vue-leaflet/vue-leaflet";
 import { LCircle, LCircleMarker, LIcon, LMarker, LPolygon, LPolyline, LRectangle, LTooltip, LWmsTileLayer, LPopup } from "@vue-leaflet/vue-leaflet";
 import { ref } from "vue";
+import { LMarkerClusterGroup } from "vue-leaflet-markercluster";
+
+import "vue-leaflet-markercluster/dist/style.css";
+
 // https://github.com/vue-leaflet/vue-leaflet/issues/278
-
-import L from "leaflet";
-
-globalThis.L = L;
 
 let coordinates = [42.407211, -87.65];
 
@@ -26,6 +28,7 @@ export default {
     LTooltip,
     LWmsTileLayer,
     LPopup,
+    LMarkerClusterGroup,
   },
   setup() {
     const zoom = ref(9);
@@ -84,47 +87,49 @@ export default {
         <l-tooltip> And with a tooltip too! </l-tooltip>
       </l-marker>
 
-      <l-marker v-for="marker in markers" :key="marker.user.name" :lat-lng="[marker.lat, marker.lng]">
-        <l-popup>
-          <div class="namecard">
-            <div class="namecard-header">
-              <img src="https://xsgames.co/randomusers/avatar.php?g=male" alt="User Icon" class="user-icon" />
-              <div>
+      <l-marker-cluster-group>
+        <l-marker v-for="marker in markers" :key="marker.user.name" :lat-lng="[marker.lat, marker.lng]">
+          <l-popup>
+            <div class="namecard">
+              <div class="namecard-header">
+                <img src="https://xsgames.co/randomusers/avatar.php?g=male" alt="User Icon" class="user-icon" />
                 <div>
-                  <username>{{ marker.user.name }}</username>
-                  <button class="relationship-btn">
-                    {{ marker.user.relationship ? marker.user.relationship : "Follow" }}
+                  <div>
+                    <username>{{ marker.user.name }}</username>
+                    <button class="relationship-btn">
+                      {{ marker.user.relationship ? marker.user.relationship : "Follow" }}
+                    </button>
+                  </div>
+                  <p class="user-description">Defualt discription</p>
+                  <p class="user-description">{{ marker.user.description }}</p>
+                </div>
+              </div>
+
+              <div v-for="post in marker.user.posts" :key="post.content" class="post">
+                <p class="user-description">Defualt post content, delete later</p>
+
+                <p>{{ post.content }}</p>
+                <div class="interaction-buttons">
+                  <button class="comment-btn">
+                    <img src="../assets/images/comment.svg" alt="Comment Icon" />
+                    <span>Comment</span>
+                  </button>
+
+                  <button class="like-btn">
+                    <img src="../assets/images/like.svg" alt="Like Icon" />
+                    <span>Like</span>
+                  </button>
+
+                  <button class="share-btn">
+                    <img src="../assets/images/share.svg" alt="Share Icon" />
+                    <span>Share</span>
                   </button>
                 </div>
-                <p class="user-description">Defualt discription</p>
-                <p class="user-description">{{ marker.user.description }}</p>
               </div>
             </div>
-
-            <div v-for="post in marker.user.posts" :key="post.content" class="post">
-              <p class="user-description">Defualt post content, delete later</p>
-
-              <p>{{ post.content }}</p>
-              <div class="interaction-buttons">
-                <button class="comment-btn">
-                  <img src="../assets/images/comment.svg" alt="Comment Icon" />
-                  <span>Comment</span>
-                </button>
-
-                <button class="like-btn">
-                  <img src="../assets/images/like.svg" alt="Like Icon" />
-                  <span>Like</span>
-                </button>
-
-                <button class="share-btn">
-                  <img src="../assets/images/share.svg" alt="Share Icon" />
-                  <span>Share</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </l-popup>
-      </l-marker>
+          </l-popup>
+        </l-marker>
+      </l-marker-cluster-group>
 
       <l-control-layers />
     </l-map>

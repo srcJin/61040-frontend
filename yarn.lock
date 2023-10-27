@@ -3439,6 +3439,13 @@ vue-eslint-parser@^9.3.1:
     lodash "^4.17.21"
     semver "^7.3.6"
 
+vue-leaflet-markercluster@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.npmmirror.com/vue-leaflet-markercluster/-/vue-leaflet-markercluster-0.5.1.tgz#dbedf6f00af35f4a1c64eda396171029808fe2a9"
+  integrity sha512-sEdF9aNqh3xSdsSRIC5w+sVUikHlhEC2IbGzEELo+YGaOqZgvrkDx8A7svDt2zKLCYgSRZim2aYwDZ7qliT5eg==
+  dependencies:
+    vue "^3.3.4"
+
 vue-router@^4.2.4:
   version "4.2.5"
   resolved "https://registry.npmmirror.com/vue-router/-/vue-router-4.2.5.tgz"
