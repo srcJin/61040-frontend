@@ -60,6 +60,14 @@ export default class FavoriteConcept {
     console.log("getFavorites", favorites);
     return favorites.flatMap((fav) => fav.entityIds);
   }
+
+  async isFavorite(user: ObjectId, entityId: ObjectId): Promise<boolean> {
+    const existing = await this.favorites.readOne({ user });
+    if (!existing) {
+      return false;
+    }
+    return existing.entityIds.includes(entityId);
+  }
 }
 
 export class AlreadyFavoritedError extends NotAllowedError {

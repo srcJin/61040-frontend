@@ -11,11 +11,8 @@ const { isLoggedIn } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
-let likes = ref<Array<Record<string, string>>>([]);
 let editing = ref("");
 let searchAuthor = ref("");
-
-const likesCount = ref(0); // store the fetched like count
 
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
@@ -28,19 +25,6 @@ async function getPosts(author?: string) {
   }
   searchAuthor.value = author ? author : "";
   posts.value = postResults;
-}
-
-async function getLikes(postId?: string) {
-  if (!postId) return;
-  let likesResults;
-  console.log("postId = ", postId);
-  try {
-    likesResults = await fetchy(`/api/likes/post/${postId}/like-count`, "GET");
-    console.log("likesResults", likesResults);
-  } catch (_) {
-    return;
-  }
-  likes.value = likesResults;
 }
 
 function updateEditing(id: string) {
@@ -64,28 +48,13 @@ onBeforeMount(async () => {
     <SearchPostForm @getPostsByAuthor="getPosts" />
   </div>
 
-  <div class="row">
-    <form @submit.prevent="getLikes(postId)" class="pure-form">
-      <fieldset>
-        <legend>getLikes</legend>
-        <input id="likes" type="text" v-model="postId" placeholder="PostId" />
-        <button type="submit" class="pure-button pure-button-primary">Get</button>
-      </fieldset>
-    </form>
-    <!-- Display the like count after fetching -->
-    <div v-if="likesCount" class="like-result">Likes count for the post: {{ likesCount }}</div>
-  </div>
-
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
+      <!-- passing post as a prop name is post, and :post passinto post component-->
       <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
       <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
 
-      <div>
-        <ul>
-          <li v-for="post in posts" :key="post.id">{{ post.title }} - Likes: {{ getLikes(post.id) }}</li>
-        </ul>
-      </div>
+      <div></div>
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>

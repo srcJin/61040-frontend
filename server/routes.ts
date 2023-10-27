@@ -414,31 +414,25 @@ class Routes {
   // Favorite[Item] routes
 
   // Add a post to the favorite list
-  @Router.post("/favorites/post/:_id")
-  async addPostToFavorites(session: WebSessionDoc, _id: ObjectId) {
+  // Add an item (post/reply/etc.) to the favorite list
+  @Router.post("/favorites/:type/:_id")
+  async addItemToFavorites(session: WebSessionDoc, type: FavoriteType, _id: ObjectId) {
     const user = WebSession.getUser(session);
-    return await Favorite.addFavorite(user, "post", _id);
+    return await Favorite.addFavorite(user, type, _id);
   }
 
-  // Remove a post from favorites
-  @Router.delete("/favorites/post/:_id")
-  async removePostFromFavorites(session: WebSessionDoc, _id: ObjectId) {
+  // Remove an item (post/reply/etc.) from favorites
+  @Router.delete("/favorites/:type/:_id")
+  async removeItemFromFavorites(session: WebSessionDoc, type: FavoriteType, _id: ObjectId) {
     const user = WebSession.getUser(session);
-    return await Favorite.removeFavorite(user, "post", _id);
+    return await Favorite.removeFavorite(user, type, _id);
   }
 
-  // Favorite a reply
-  @Router.post("/favorites/reply/:_id")
-  async addReplyToFavorites(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
+  // Get all favorites of a specific type (post/reply/etc.) for a user
+  @Router.get("/favorites/:type")
+  async getFavoritesByType(session: WebSessionDoc, type: FavoriteType) {
     const user = WebSession.getUser(session);
-    return await Favorite.addFavorite(user, "reply", replyId);
-  }
-
-  // Remove a reply from favorites
-  @Router.delete("/favorites/reply/:_id")
-  async removeReplyFromFavorites(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
-    const user = WebSession.getUser(session);
-    return await Favorite.removeFavorite(user, "reply", replyId);
+    return await Favorite.getFavorites(user, type);
   }
 
   // Get all favorites for a user
@@ -448,6 +442,13 @@ class Routes {
     const favoritePosts = await Favorite.getFavorites(user, "post");
     const favoriteReplies = await Favorite.getFavorites(user, "reply");
     return { favoritePosts, favoriteReplies };
+  }
+
+  // Check if an item (post/reply/etc.) is in the favorites list
+  @Router.get("/favorites/isFavorite/:_id")
+  async isFavorite(session: WebSessionDoc, _id: ObjectId) {
+    const user = WebSession.getUser(session);
+    return await Favorite.isFavorite(user, _id);
   }
 
   // Like[Post] routes
