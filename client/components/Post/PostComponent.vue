@@ -6,6 +6,7 @@ import questionIcon from "@/assets/eva_outline/bulb-outline.svg";
 import articleIcon from "@/assets/eva_outline/file-text-outline.svg";
 import likeIcon from "@/assets/eva_outline/heart-outline.svg";
 import favoriteIcon from "@/assets/eva_outline/star-outline.svg";
+import ReplyListComponent from "../Reply/ReplyListComponent.vue";
 
 import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
@@ -120,6 +121,8 @@ async function getLikes(postId?: string) {
       </menu>
     </div>
   </div>
+  <!-- take the id to pass to ReplyListComponent -->
+  <ReplyListComponent :postId="post._id" />
 </template>
 
 <style scoped>

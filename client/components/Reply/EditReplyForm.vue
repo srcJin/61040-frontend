@@ -3,35 +3,35 @@ import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import { formatDate } from "../../utils/formatDate";
 
-const props = defineProps(["post"]);
-const content = ref(props.post.content);
+const props = defineProps(["reply"]);
+const content = ref(props.reply.content);
 console.log("props", props);
-console.log("props.post=", props.post);
-console.log("props.post.content=", props.post.content);
-const emit = defineEmits(["editPost", "refreshPosts"]);
+console.log("props.reply=", props.reply);
+console.log("props.reply.content=", props.reply.content);
+const emit = defineEmits(["editReply", "refreshReplys"]);
 
-const editPost = async (content: string) => {
+const editReply = async (content: string) => {
   try {
-    await fetchy(`api/posts/${props.post._id}`, "PATCH", { body: { update: { content: content } } });
+    await fetchy(`api/replys/${props.reply._id}`, "PATCH", { body: { update: { content: content } } });
   } catch (e) {
     return;
   }
-  emit("editPost");
-  emit("refreshPosts");
+  emit("editReply");
+  emit("refreshReplys");
 };
 </script>
 
 <template>
-  <form @submit.prevent="editPost(content)">
-    <p class="author">{{ props.post.author }}</p>
-    <textarea id="content" v-model="content" placeholder="Create a post!" required> </textarea>
+  <form @submit.prevent="editReply(content)">
+    <p class="author">{{ props.reply.author }}</p>
+    <textarea id="content" v-model="content" placeholder="Create a reply!" required> </textarea>
     <div class="base">
       <menu>
         <li><button class="btn-small pure-button-primary pure-button" type="submit">Save</button></li>
-        <li><button class="btn-small pure-button" @click="emit('editPost')">Cancel</button></li>
+        <li><button class="btn-small pure-button" @click="emit('editReply')">Cancel</button></li>
       </menu>
-      <p v-if="props.post.dateCreated !== props.post.dateUpdated" class="timestamp">Edited on: {{ formatDate(props.post.dateUpdated) }}</p>
-      <p v-else class="timestamp">Created on: {{ formatDate(props.post.dateCreated) }}</p>
+      <p v-if="props.reply.dateCreated !== props.reply.dateUpdated" class="timestamp">Edited on: {{ formatDate(props.reply.dateUpdated) }}</p>
+      <p v-else class="timestamp">Created on: {{ formatDate(props.reply.dateCreated) }}</p>
     </div>
   </form>
 </template>

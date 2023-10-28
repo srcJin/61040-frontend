@@ -1,34 +1,42 @@
 <script setup lang="ts">
 import AbstractWorldmapComponent from "@/components/AbstractWorldmap/AbstractWorldmap.vue";
-import ButtonGroup from "@/components/Button/ButtonGroup.vue";
 import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useTitleStore } from "@/stores/title";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+
 const { setPageTitle } = useTitleStore();
+
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
-const selectedCategory = ref<string>("");
-const selectedFilter = ref<string>("");
+const router = useRouter();
+
+// if we scroll to the bottom of the page, routes to /home
+const checkScroll = () => {
+  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 50; // 50 is a buffer
+  if (nearBottom) {
+    router.push("/");
+  }
+};
 
 onMounted(() => {
   setPageTitle("PlazaPlaza");
+  window.addEventListener("scroll", checkScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", checkScroll);
 });
 </script>
 
 <template>
   <main>
-    <h1>Plaza</h1>
+    <section class="titlebar">
+      <div class="titleText">Plaza</div>
+    </section>
     <AbstractWorldmapComponent />
-
-    <div>
-      <ButtonGroup :buttons="['Blogs', 'Q&A', 'Wiki']" :modelValue="selectedCategory" @update:modelValue="(val) => (selectedCategory = val)" />
-      <ButtonGroup :buttons="['Latest', 'Trending', 'Nearby']" :modelValue="selectedFilter" @update:modelValue="(val) => (selectedFilter = val)" />
-
-      <!-- Display Selected -->
-      <div>Selected Category: {{ selectedCategory }} Selected Filter: {{ selectedFilter }}</div>
-    </div>
     <!-- <PostListComponent :category="selectedCategory.value" :filter="selectedFilter.value" /> -->
     <PostListComponent />
   </main>
@@ -37,5 +45,19 @@ onMounted(() => {
 <style scoped>
 h1 {
   text-align: center;
+}
+
+.titlebar {
+  display: flex;
+  justify-content: center;
+  background-color: var(--theme-color);
+  min-height: 4em;
+}
+.titleText {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 1.5em;
+  color: var(--theme-bright-text);
+  max-height: 2em;
 }
 </style>

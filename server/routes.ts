@@ -237,22 +237,22 @@ class Routes {
     return await Relationship.follow(user1Id, user2Id);
   }
 
-  @Router.get("/relationships")
-  async getRelationships(session: WebSessionDoc, type?: RelType) {
+  @Router.get("/relationships/")
+  async getRelationships(session: WebSessionDoc) {
     // You can pass type as a query parameter
     const user = WebSession.getUser(session);
     // for debugging purpose, we just use follow
-    return { msg: "Following users:", list: await Relationship.getRelationships(user, RelType.Follow) };
+    return { msg: "Following users:", list: await Relationship.getRelationships(user) };
   }
 
-  @Router.delete("/relationships/:user2")
+  @Router.delete("/relationships/:user2/:relType")
   async removeRelationship(session: WebSessionDoc, user2: string, relType: RelType) {
     const user1Id = WebSession.getUser(session);
     const user2Id = (await User.getUserByUsername(user2))._id;
     return await Relationship.removeRelationship(user1Id, user2Id, relType);
   }
 
-  @Router.get("/relationships/requests")
+  @Router.get("/relationships/requests/:relType")
   async getRequests(session: WebSessionDoc, relType: RelType) {
     const user = WebSession.getUser(session);
     const requests = await Relationship.getRequests(user, relType);
@@ -261,7 +261,7 @@ class Routes {
     };
   }
 
-  @Router.post("/relationships/requests/:to")
+  @Router.post("/relationships/requests/:to/:relType")
   async sendRequest(session: WebSessionDoc, to: string, relType: RelType) {
     // relType can be passed as a query parameter
     const user = WebSession.getUser(session);
@@ -269,14 +269,14 @@ class Routes {
     return await Relationship.sendRequest(user, toId, relType);
   }
 
-  @Router.delete("/relationships/requests/:to")
+  @Router.delete("/relationships/requests/:to/:relType")
   async removeRequest(session: WebSessionDoc, to: string, relType: RelType) {
     const user = WebSession.getUser(session);
     const toId = (await User.getUserByUsername(to))._id;
     return await Relationship.removeRequest(user, toId, relType);
   }
 
-  @Router.put("/relationships/accept/:from")
+  @Router.put("/relationships/accept/:from/:relType")
   async acceptRequest(session: WebSessionDoc, from: string, relType: RelType) {
     // relType can be passed as a query parameter
     const user = WebSession.getUser(session);
@@ -284,7 +284,7 @@ class Routes {
     return await Relationship.acceptRequest(fromId, user, relType);
   }
 
-  @Router.put("/relationships/reject/:from")
+  @Router.put("/relationships/reject/:from/:relType")
   async rejectRequest(session: WebSessionDoc, from: string, relType: RelType) {
     const user = WebSession.getUser(session);
     const fromId = (await User.getUserByUsername(from))._id;

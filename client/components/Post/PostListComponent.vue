@@ -43,7 +43,7 @@ onBeforeMount(async () => {
     <CreatePostForm @refreshPosts="getPosts" />
   </section> -->
   <div class="row">
-    <h2 v-if="!searchAuthor">Posts:</h2>
+    <h2 v-if="!searchAuthor"></h2>
     <h2 v-else>Posts by {{ searchAuthor }}:</h2>
     <SearchPostForm @getPostsByAuthor="getPosts" />
   </div>
@@ -53,7 +53,6 @@ onBeforeMount(async () => {
       <!-- passing post as a prop name is post, and :post passinto post component-->
       <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
       <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
-
       <div></div>
     </article>
   </section>

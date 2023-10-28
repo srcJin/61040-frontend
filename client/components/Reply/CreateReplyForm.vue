@@ -4,22 +4,27 @@ import { fetchy } from "../../utils/fetchy";
 
 const content = ref("");
 const title = ref("");
-const postType = ref("");
+const replyType = ref("");
 
-const emit = defineEmits(["refreshPosts"]);
+const emit = defineEmits(["refreshReplys"]);
 
-const createPost = async (content: string) => {
+const props = defineProps({
+  postId: String,
+});
+
+const createReply = async (content: string) => {
   try {
-    await fetchy("api/posts", "POST", {
-      title: { title },
+    await fetchy(`api/replies/${props.postId}`, "POST", {
       body: { content },
-      postType: { postType },
+      replyType: { replyType },
+
     });
-    console.log("Post created!", { title: { title }, body: { content } });
-  } catch (_) {
+    console.log("Post created!", {  body: { content }, replyType: { replyType } });
+  } catch (error) {
+    console.error("Error creating reply:", error);
     return;
   }
-  emit("refreshPosts");
+  emit("refreshReplys");
   emptyForm();
 };
 
@@ -29,30 +34,20 @@ const emptyForm = () => {
 </script>
 
 <template>
-  <form @submit.prevent="createPost(content)">
-    <!-- Selection of three buttons -->
-    <div class="post-type">
+  <form @submit.prevent="createReply(content)">
+    <!-- <input id="reply-title" v-model="title" placeholder="Write a title!" type="text" /> -->
+    <textarea id="post-content" v-model="content" placeholder="Write a reply!" required></textarea>
+    <div class="reply-type">
       <label>
-        <input type="radio" name="postType" value="article" v-model="postType" />
-        Article
+        <input type="radio" name="replyType" value="comment" v-model="replyType" />
+        Comment
       </label>
       <label>
-        <input type="radio" name="postType" value="question" v-model="postType" />
-        Question
-      </label>
-      <label>
-        <input type="radio" name="postType" value="wiki" v-model="postType" />
-        Wiki
+        <input type="radio" name="replyType" value="answer" v-model="replyType" />
+        Answer
       </label>
     </div>
-
-    <!-- <label for="post-title">Title:</label> -->
-    <input id="post-title" v-model="title" placeholder="Write a title!" type="text" />
-
-    <!-- <label for="post-content">Contents:</label> -->
-    <textarea id="post-content" v-model="content" placeholder="Write Something!" required></textarea>
-
-    <button type="submit" class="pure-button-primary pure-button">Create Post</button>
+    <button type="submit" class="pure-button-primary pure-button">Create Reply</button>
   </form>
 </template>
 
@@ -75,7 +70,7 @@ textarea {
   resize: none;
 }
 
-#post-title {
+#reply-title {
   font-size: 1.5em;
   color: var(--theme-bright-text);
   height: 2em;
@@ -83,10 +78,10 @@ textarea {
   margin-bottom: 1em;
 }
 
-#post-content {
-  font-size: 1.5em;
+#reply-content {
+  font-size: 1em;
   color: var(--theme-bright-text);
-  height: 10em;
+  height: 1.5em;
   text-align: left;
   margin-bottom: 1em;
 }

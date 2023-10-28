@@ -5,9 +5,12 @@ import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
+import likedIcon from "@/assets/eva_fill/heart-fill.svg";
+import likeIcon from "@/assets/eva_outline/heart-outline.svg";
+
 // define props
-const props = defineProps(["post"]);
-const emit = defineEmits(["editPost", "refreshPosts"]);
+const props = defineProps(["reply"]);
+const emit = defineEmits(["editReply", "refreshReplys"]);
 const { currentUsername } = storeToRefs(useUserStore());
 let likes = ref<Array<Record<string, string>>>([]);
 let likesCount = ref(0); // store the fetched like count
@@ -15,21 +18,21 @@ let isFavorited = ref(false); // Initialize the ref to store favorited status
 
 // console.log("props", props);
 
-const deletePost = async () => {
+const deleteReply = async () => {
   try {
-    await fetchy(`api/posts/${props.post._id}`, "DELETE");
+    await fetchy(`api/replys/${props.reply._id}`, "DELETE");
   } catch {
     return;
   }
-  emit("refreshPosts");
+  emit("refreshReplys");
 };
 
-async function getLikes(postId?: string) {
-  if (!postId) return;
+async function getLikes(replyId?: string) {
+  if (!replyId) return;
   let likesResults;
-  // console.log("postId = ", postId);
+  // console.log("replyId = ", replyId);
   try {
-    likesResults = await fetchy(`/api/likes/post/${postId}/like-count`, "GET");
+    likesResults = await fetchy(`/api/likes/reply/${replyId}/like-count`, "GET");
     // console.log("likesResults", likesResults);
   } catch (_) {
     return;
@@ -37,41 +40,43 @@ async function getLikes(postId?: string) {
 
   likes.value = likesResults;
 
-  async function checkIfFavorited(postId: string) {
-    try {
-      const result = await fetchy(`/api/favorites/isFavorite/${postId}`, "GET");
-      isFavorited.value = result.isFavorite; // returns a boolean "isFavorite" property
-      console.log("isFavorited", isFavorited.value);
-    } catch (err) {
-      console.error("Error checking favorite status:", err);
-    }
+  async function addLike() {
+    // Placeholder function for handling the "Like" action for reply
+    console.log("Liked reply:", props.reply._id);
+    // Here, you'll implement logic to add a like for the reply, and maybe refresh likes count
   }
 
   onMounted(async () => {
-    if (props.post._id) {
-      await checkIfFavorited(props.post._id);
-      await getLikes(props.post._id);
+    if (props.reply._id) {
+      await checkIfFavorited(props.reply._id);
+      await getLikes(props.reply._id);
     }
   });
 }
 </script>
 
 <template>
-  <p>Title: {{ props.post.title }}</p>
-  <p class="">Author: {{ props.post.author }}</p>
-  <p>Content: {{ props.post.content }}</p>
-  <p>Type: {{ props.post.postType }}</p>
-  <div class="row">Likes: {{ likesCount }}</div>
-  <div class="row">Favorited: {{ isFavorited }}</div>
+  <p>Content: {{ props.reply.content }}</p>
+  <p class="">Author: {{ props.reply.author }}</p>
+  <p>Type: {{ props.reply.replyType }}</p>
 
   <div class="base">
-    <menu v-if="props.post.author == currentUsername">
-      <li><button class="btn-small pure-button" @click="emit('editPost', props.post._id)">Edit</button></li>
-      <li><button class="button-error btn-small pure-button" @click="deletePost">Delete</button></li>
+    <menu v-if="props.reply.author == currentUsername">
+      <li><button class="btn-small pure-button" @click="emit('editReply', props.reply._id)">Edit</button></li>
+      <li><button class="button-error btn-small pure-button" @click="deleteReply">Delete</button></li>
     </menu>
+
+    <div class="interaction-icons">
+      <button class="icon-button" @click="addLike">
+        <img v-if="likesCount > 0" :src="likedIcon" alt="Liked Icon" />
+        <img v-else :src="likeIcon" alt="Like Icon" />
+      </button>
+      <span>Likes: {{ likesCount }}</span>
+    </div>
+
     <article class="timestamp">
-      <p v-if="props.post.dateCreated !== props.post.dateUpdated">Edited on: {{ formatDate(props.post.dateUpdated) }}</p>
-      <p v-else>Created on: {{ formatDate(props.post.dateCreated) }}</p>
+      <p v-if="props.reply.dateCreated !== props.reply.dateUpdated">Edited on: {{ formatDate(props.reply.dateUpdated) }}</p>
+      <p v-else>Created on: {{ formatDate(props.reply.dateCreated) }}</p>
     </article>
   </div>
 </template>
@@ -83,7 +88,7 @@ p {
 
 .author {
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1em;
 }
 
 menu {
@@ -110,5 +115,42 @@ menu {
 
 .base article:only-child {
   margin-left: auto;
+}
+
+.likes,
+.favorites {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+img {
+  width: 24px;
+  height: 24px;
+}
+
+.post-type-icon {
+  margin-right: 8px; /* Adjust the margin as needed */
+  /* vertical-align: middle; */
+  width: 24px;
+  height: 24px;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.icon-button img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.icon-button:focus {
+  outline: none;
 }
 </style>

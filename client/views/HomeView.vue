@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import ButtonGroup from "@/components/Button/ButtonGroup.vue";
 import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
+
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 
 import { useTitleStore } from "@/stores/title";
 import { onMounted } from "vue";
 const { setPageTitle } = useTitleStore();
+
+const selectedCategory = ref<string>("");
+const selectedFilter = ref<string>("");
 
 onMounted(() => {
   setPageTitle("BlogBlog");
@@ -16,8 +22,17 @@ onMounted(() => {
 <template>
   <main>
     <section class="titlebar">
-      <div class="titleText">WeeBlog</div>
+      <div class="titleText">Blog</div>
     </section>
+
+    <div>
+      <ButtonGroup :buttons="['Blogs', 'Q&A', 'Wiki']" :modelValue="selectedCategory" @update:modelValue="(val) => (selectedCategory = val)" />
+      <ButtonGroup :buttons="['Latest', 'Trending', 'Nearby']" :modelValue="selectedFilter" @update:modelValue="(val) => (selectedFilter = val)" />
+
+      <!-- Display Selected -->
+      <div>Selected Category: {{ selectedCategory }} Selected Filter: {{ selectedFilter }}</div>
+    </div>
+
     <section>
       <!-- <h3 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h3>
       <h3 v-else>Please login!</h3> -->

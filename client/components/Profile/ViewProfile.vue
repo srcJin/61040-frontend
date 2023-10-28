@@ -50,6 +50,7 @@ async function getProfile() {
   let profileResult;
   try {
     // profileResult = await fetchy(`api/profile/${username}`, "GET", { query });
+    console.log(`getProfile api/profile/${currentUsername.value}`);
     profileResult = await fetchy(`api/profile/${currentUsername.value}`, "GET");
 
     console.log("getProfile, profileResult=", profileResult);
@@ -65,7 +66,7 @@ async function getProfile() {
 // }
 
 onBeforeMount(async () => {
-  await getProfile("hello");
+  await getProfile();
   loaded.value = true;
 });
 </script>

@@ -27,7 +27,8 @@ onBeforeMount(async () => {
 <template>
   <header>
     <section class="titlebar">
-      <div class="titlebar-text">{{ pageTitle }}</div>
+      <!-- <div class="titlebar-text">{{ pageTitle }}</div> -->
+      <div class="titlebar-text"><img src="@/assets/images/weehive_logo.png" class="navicon" /></div>
 
       <div class="titlebar-user">
         <div v-if="isLoggedIn">
@@ -52,8 +53,8 @@ onBeforeMount(async () => {
     <nav class="navbar">
       <div class="title">
         <RouterLink :to="{ name: 'Home' }">
-          <!-- <img src="@/assets/images/weehive_logo.png" class="navicon" /> -->
-          <div>{{ pageTitle }}</div>
+          <img src="@/assets/images/weehive_logo.png" class="navicon" />
+          <!-- <div>{{ pageTitle }}</div> -->
 
           <!-- <h1>WeeHive</h1> -->
         </RouterLink>
@@ -64,6 +65,13 @@ onBeforeMount(async () => {
             <div>
               <img src="@/assets/images/map.svg" class="navicon" />
               <p>Map</p>
+            </div>
+          </RouterLink>
+
+          <RouterLink :to="{ name: 'Relationship' }" :class="{ underline: currentRouteName == 'Relationship' }">
+            <div>
+              <img src="@/assets/images/map.svg" class="navicon" />
+              <p>Relationship</p>
             </div>
           </RouterLink>
 
@@ -316,6 +324,11 @@ a {
     margin-left: 1em;
     justify-content: left;
     flex-grow: 1; /* This allows it to take up available space */
+  }
+
+  .titlebar-text img {
+    height: 1.5em;
+    margin-top: -0.5em;
   }
 
   .navbar-user {

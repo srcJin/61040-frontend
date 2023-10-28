@@ -1,30 +1,33 @@
 <script setup lang="ts">
-import EditPostForm from "@/components/Post/EditPostForm.vue";
-import PostComponent from "@/components/Post/PostComponent.vue";
+import EditReplyForm from "@/components/Reply/EditReplyForm.vue";
+import ReplyComponent from "@/components/Reply/ReplyComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import SearchPostForm from "./SearchPostForm.vue";
+import CreateReplyForm from "./CreateReplyForm.vue";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 
-const loaded = ref(false);
-let posts = ref<Array<Record<string, string>>>([]);
-let editing = ref("");
-let searchAuthor = ref("");
+// define a prop to store postID from the postComponent
+const props = defineProps({
+  postId: String,
+});
 
-async function getPosts(author?: string) {
-  let query: Record<string, string> = author !== undefined ? { author } : {};
-  let postResults;
+const loaded = ref(false);
+let replies = ref<Array<Record<string, string>>>([]);
+let editing = ref("");
+
+async function getReplies(postId: string) {
+  let replyResults;
   try {
-    postResults = await fetchy("api/posts", "GET", { query });
-    console.log("postResults", postResults);
+    console.log("getReplies api/replies/${postId}", `api/replies/${postId}`);
+    replyResults = await fetchy(`api/replies/${postId}`, "GET");
+    console.log("replyResults", replyResults);
   } catch (_) {
     return;
   }
-  searchAuthor.value = author ? author : "";
-  posts.value = postResults;
+  replies.value = replyResults;
 }
 
 function updateEditing(id: string) {
@@ -32,33 +35,21 @@ function updateEditing(id: string) {
 }
 
 onBeforeMount(async () => {
-  await getPosts();
+  await getReplies(props.postId);
   loaded.value = true;
 });
 </script>
 
 <template>
-  <!-- <section v-if="isLoggedIn">
-    <h2>Create a post:</h2>
-    <CreatePostForm @refreshPosts="getPosts" />
-  </section> -->
-  <div class="row">
-    <h2 v-if="!searchAuthor">Posts:</h2>
-    <h2 v-else>Posts by {{ searchAuthor }}:</h2>
-    <SearchPostForm @getPostsByAuthor="getPosts" />
-  </div>
-
-  <section class="posts" v-if="loaded && posts.length !== 0">
-    <article v-for="post in posts" :key="post._id">
-      <!-- passing post as a prop name is post, and :post passinto post component-->
-      <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
-      <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
-
-      <div></div>
+  <section class="replies" v-if="loaded && replies.length !== 0">
+    <article v-for="reply in replies" :key="reply._id">
+      <ReplyComponent v-if="editing !== reply._id" :reply="reply" @refreshReplies="getReplies" @editReply="updateEditing" />
+      <EditReplyForm v-else :reply="reply" @refreshReplies="getReplies" @editReply="updateEditing" />
     </article>
   </section>
-  <p v-else-if="loaded">No posts found</p>
+  <p v-else-if="loaded">No replies found</p>
   <p v-else>Loading...</p>
+  <CreateReplyForm :postId="postId" @refreshReplys="getReplies" />
 </template>
 
 <style scoped>
@@ -84,7 +75,7 @@ article {
   padding: 1em;
 }
 
-.posts {
+.replys {
   padding: 1em;
 }
 

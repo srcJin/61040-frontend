@@ -94,10 +94,9 @@ export default class RelationshipConcept {
     return { msg: `Removed ${relType}!` };
   }
 
-  async getRelationships(user: ObjectId, relType: RelType) {
+  async getRelationships(user: ObjectId) {
     const relationships = await this.relationships.readMany({
       $or: [{ user1: user }, { user2: user }],
-      relType: relType,
     });
     return relationships.map((rel) => (rel.user1.toString() === user.toString() ? rel.user2 : rel.user1));
   }
