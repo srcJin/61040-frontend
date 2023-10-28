@@ -13,12 +13,13 @@ async function getRelationships() {
   let relationshipResults;
   try {
     console.log("fetchy getting relationships");
-    relationshipResults = await fetchy(`/api/relationships/`, "GET");
+    relationshipResults = await fetchy(`api/relationships/`, "GET");
     console.log("relationshipResults", relationshipResults);
   } catch {
     return;
   }
-  relationships.value = relationshipResults;
+  relationships.value = relationshipResults.list;
+  console.log("relationshipResults", relationshipResults);
 }
 
 async function refreshRequests() {
@@ -38,6 +39,8 @@ onBeforeMount(async () => {
   <div class="row">
     <div class="relationships">
       <h1>My Relationships</h1>
+      <h2>Following</h2>
+
       <article v-if="loaded">
         <p v-if="relationships.length === 0">No relationships yet!</p>
         <p v-for="relationship in relationships" :key="relationship">

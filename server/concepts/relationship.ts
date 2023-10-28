@@ -98,6 +98,11 @@ export default class RelationshipConcept {
     const relationships = await this.relationships.readMany({
       $or: [{ user1: user }, { user2: user }],
     });
+    console.log("getRelationships", relationships);
+    console.log(
+      "getRelationships",
+      relationships.map((rel) => (rel.user1.toString() === user.toString() ? rel.user2 : rel.user1)),
+    );
     return relationships.map((rel) => (rel.user1.toString() === user.toString() ? rel.user2 : rel.user1));
   }
 

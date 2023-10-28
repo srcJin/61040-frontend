@@ -46,6 +46,15 @@ export default class UserConcept {
     return ids.map((id) => idToUser.get(id.toString())?.username ?? "DELETED_USER");
   }
 
+  async idToUsername(id: ObjectId): Promise<string> {
+    const user = await this.users.readOne({ _id: id });
+    if (user) {
+      return user.username;
+    } else {
+      return "User Not found";
+    }
+  }
+
   async getUsers(username?: string) {
     // If username is undefined, return all users by applying empty filter
     const filter = username ? { username } : {};

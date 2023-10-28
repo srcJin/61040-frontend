@@ -89,8 +89,12 @@ export default {
             lat: 42.407211 + Math.random() * 0.5, // Assuming lastLocation is an array of [lat, lng]
             lng: -71.382439 + Math.random() * 0.5,
             user: {
+              _id: userProfile._id, // userId
+              description: userProfile.description,
               name: userProfile.nickname,
               posts: userPosts,
+              username: username, // Added this line to include the username
+              userId: userProfile._id, // Included userId which is essentially same as _id, but you can rename it if you have a different field name for it
             },
           });
         }
@@ -99,6 +103,7 @@ export default {
       return userCards;
     }
 
+    // for testing
     function generateRandomMarkers(count) {
       const markersArray = [];
       for (let i = 0; i < count; i++) {
@@ -113,11 +118,22 @@ export default {
       return markersArray;
     }
 
+    const followUser = async (userId) => {
+      try {
+        await fetchy(`api/relationships/follow/${userId}`, "POST");
+        // You can also update the local state here to reflect the followed state, if needed.
+        console.log(`Followed user: ${userId}`);
+      } catch (error) {
+        console.error(`Error following user ${userId}:`, error);
+      }
+    };
+
     return {
       zoom,
       centerCoordinate,
       // markers,
       userCards,
+      followUser,
     };
   },
 };
@@ -163,7 +179,10 @@ export default {
                   <div>
                     <username>{{ userCard.user.name }}</username>
                     <!-- Defaulted to "Follow" as you did not have relationship data in your example userCards -->
-                    <button class="relationship-btn">Follow</button>
+                    {{ userCard.user.userId }}
+                    {{ userCard.user.username }}
+
+                    <button class="relationship-btn" @click="() => followUser(userCard.user.username)">Follow</button>
                   </div>
                   <!-- Default Description -->
                   <p class="user-description">Default description</p>

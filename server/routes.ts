@@ -238,19 +238,30 @@ class Routes {
   }
 
   // follow target user
+  // follow target user
   @Router.post("/relationships/follow/:user2")
   async follow(session: WebSessionDoc, user2: string) {
+    console.log("follow user2=", user2);
     const user1Id = WebSession.getUser(session);
-    const user2Id = (await User.getUserByUsername(user2))._id;
-    return await Relationship.follow(user1Id, user2Id);
+    const user2Id = await User.getUserByUsername(user2);
+    await Relationship.follow(user1Id, user2Id._id);
+    return { success: true, message: "Followed successfully" };
   }
 
   @Router.get("/relationships/")
   async getRelationships(session: WebSessionDoc) {
     // You can pass type as a query parameter
     const user = WebSession.getUser(session);
-    // for debugging purpose, we just use follow
-    return { msg: "Following users:", list: await Relationship.getRelationships(user) };
+    const relationships = await Relationship.getRelationships(user);
+    // Convert each userId in relationships to username
+    const usernames = await Promise.all(
+      relationships.map(async (userId: ObjectId) => {
+        console.log("getRelationships", Responses.convertIdToUsername(userId));
+        return Responses.convertIdToUsername(userId);
+      }),
+    );
+
+    return { msg: "Following users:", list: usernames };
   }
 
   @Router.delete("/relationships/:user2/:relType")

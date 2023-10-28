@@ -6,6 +6,7 @@ import { AlreadyRelatedError, RelationshipNotFoundError, RequestAlreadyExistsErr
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
 import { ProfileDoc } from "./concepts/profile";
 
+import { ObjectId } from "mongodb";
 import { Router } from "./framework/router";
 
 /**
@@ -21,7 +22,16 @@ export default class Responses {
       return post;
     }
     const author = await User.getUserById(post.author);
+    console.log("responses.ts: author: ", author);
     return { ...post, author: author.username };
+  }
+
+  static async convertIdToUsername(id: ObjectId) {
+    console.log("convertIdToUsername: id: ", id);
+    const user = await User.getUserById(id);
+    console.log("responses.ts: user: ", user);
+    console.log("responses.ts: user.username: ", user.username);
+    return user.username;
   }
 
   /**
