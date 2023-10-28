@@ -108,11 +108,13 @@ async function checkIfLiked(postId: string) {
 
 async function checkIfFavorited(postId: string) {
   try {
-    const result = await fetchy(`/api/favorites/isFavorite/${postId}`, "GET");
-    isFavorited.value = result.isFavorite; // returns a boolean "isFavorite" property
-    console.log("checkIfFavorited isFavorited = ", isFavorited.value);
+    console.log("Checking if post is liked:", postId);
+    const userFavorited = await fetchy(`/api/favorites`, "GET"); // Get all likes for the current user
+    console.log("checkIfFavorited userFavorited = ", userFavorited);
+    isFavorited.value = userFavorited.favorites.includes(postId);
+    console.log("checkIfLiked isFavorited = ", isFavorited.value);
   } catch (err) {
-    console.error("Error checking favorite status:", err);
+    console.error("Error checking like status:", err);
   }
 }
 
@@ -129,6 +131,7 @@ onMounted(async () => {
   <div class="post-container">
     <div class="title-container">
       <img :src="icons[props.post.postType] ? icons[props.post.postType] : icons['article']" alt="Post type icon" class="post-type-icon" />
+      {{ props.post.postType }}
       <h1 class="post-title">{{ props.post.title }}</h1>
       <!-- <p class="post-type">Type: {{ props.post.postType }}</p> -->
       <p class="post-author">Author: {{ props.post.author }}</p>

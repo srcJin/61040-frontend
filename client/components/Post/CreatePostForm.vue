@@ -8,14 +8,12 @@ const postType = ref("");
 
 const emit = defineEmits(["refreshPosts"]);
 
-const createPost = async (content: string) => {
+const createPost = async (title: string, content: string, postType: string) => {
   try {
     await fetchy("api/posts", "POST", {
-      title: { title },
-      body: { content },
-      postType: { postType },
+      body: { title: title, content: content, postType: postType },
     });
-    console.log("Post created!", { title: { title }, body: { content } });
+    console.log("Post created!", { title: { title: title }, body: { content: content }, postType: { postType: postType } });
   } catch (_) {
     return;
   }
@@ -29,7 +27,7 @@ const emptyForm = () => {
 </script>
 
 <template>
-  <form @submit.prevent="createPost(content)">
+  <form @submit.prevent="createPost(title, content, postType)">
     <!-- Selection of three buttons -->
     <div class="post-type">
       <label>

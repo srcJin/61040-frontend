@@ -132,9 +132,10 @@ class Routes {
   }
 
   @Router.post("/posts")
-  async createPost(session: WebSessionDoc, title: string, content: string, visibility: string, type?: PostType, options?: PostOptions) {
+  async createPost(session: WebSessionDoc, title: string, content: string, postType?: PostType, options?: PostOptions) {
     const author = WebSession.getUser(session);
-    const created = await Post.create(author, title, content, type || "article", options);
+    const created = await Post.create(author, title, content, postType, options);
+    console.log("created=", created);
     return { msg: created.msg, post: await Responses.post(created.post) };
   }
 

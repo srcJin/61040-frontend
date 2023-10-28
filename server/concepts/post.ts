@@ -29,7 +29,9 @@ export default class PostConcept {
   public readonly posts = new DocCollection<PostDoc>("posts");
 
   async create(author: ObjectId, title: string, content: string, postType?: PostType, options?: PostOptions) {
-    const _id = await this.posts.createOne({ author, title, content, postType, options }); // Added type to the creation
+    console.log("Creating post with title:", title, " and type:", postType);
+    const _id = await this.posts.createOne({ author, title, content, postType, options });
+    console.log("PostConcept create Created post with:", { author, title, content, postType, options });
     const post = await this.posts.readOne({ _id });
     return { msg: "Post successfully created!", post };
   }
