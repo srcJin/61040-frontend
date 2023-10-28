@@ -4,6 +4,7 @@ import { ref } from "vue";
 import * as d3 from "d3";
 import { onMounted } from "vue";
 import data from "@/assets/data.json";
+import { useRouter } from "vue-router";
 // console.log("us", us);
 
 export default {
@@ -25,20 +26,21 @@ export default {
 
   setup(props) {
     const svgRef = ref(null);
+    const router = useRouter();
 
     onMounted(() => {
       let svg = d3.select(svgRef.value);
       const zoom = d3.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
       const width = 900;
       const height = 600;
-      const margin = 1;
+      const margin = 0.5;
 
       // Set the attributes directly on this SVG, rather than creating a new one
       svg
         .attr("viewBox", [-margin, -margin, width, height])
         .attr("width", width)
         .attr("height", height)
-        .attr("style", "max-width: 100%; height: auto; font: 6px sans-serif;")
+        .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;")
         .on("click", reset)
         .call(zoom);
 
@@ -55,8 +57,8 @@ export default {
       // Convert lat/lng to x/y using Mercator projection
       const projection = d3.geoMercator().fitSize([width, height], { type: "FeatureCollection", features: data });
 
-      // Categorical color scale
-      const color = d3.scaleOrdinal(d3.schemeTableau10);
+      const colorExtent = d3.extent(data, (d) => d.value); // gets the min and max value from the data
+      const colorScale = d3.scaleSequential(d3.interpolateOranges).domain(colorExtent);
 
       // Create the pack layout.
       const pack = d3
@@ -97,7 +99,7 @@ export default {
         .append("path")
         .attr("d", (d) => hexagon(0, 0, d.r)) // Use d.r as the radius for the hexagon.
         .attr("fill-opacity", 0.7)
-        .attr("fill", (d) => color(group(d.data)))
+        .attr("fill", (d) => colorScale(d.value))
         .on("click", clicked);
 
       // Add a label.
@@ -124,14 +126,35 @@ export default {
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em");
 
-      return Object.assign(svg.node(), { scales: { color } });
+      // Calculate the center of the SVG
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      const startZoomScale = 0.8;
+      const initialZoomScale = 1.5; // Sets the initial zoom to 2x the original size.
+
+      // Translate to ensure the zoom is centered around the midpoint
+      const initialTranslateX = centerX - initialZoomScale * centerX;
+      const initialTranslateY = centerY - initialZoomScale * centerY;
+
+      // startig zoom after mount
+      svg.call(zoom.transform, d3.zoomIdentity.translate(centerX - startZoomScale * centerX, centerY - startZoomScale * centerY).scale(startZoomScale));
+
+      // After a short delay, animate to the final zoomed state
+      svg
+        .transition()
+        .delay(500) // start after 500ms
+        .duration(2000) // animation duration of 2000ms or 2 seconds
+        .call(zoom.transform, d3.zoomIdentity.translate(centerX - initialZoomScale * centerX, centerY - initialZoomScale * centerY).scale(initialZoomScale));
+
+      return Object.assign(svg.node());
 
       function reset() {
         node.transition().style("fill", (d) => color(group(d.data)));
         svg
           .transition()
           .duration(750)
-          .call(zoom.transform, d3.zoomIdentity, d3.zoomTransform(svg.node()).invert([width / 2, height / 2]));
+          .call(zoom.transform, d3.zoomIdentity, d3.zoomTransform(svg.node()).invert([width / 4, height / 4]));
       }
 
       function clicked(event, d) {
@@ -142,13 +165,19 @@ export default {
         // node.transition().style("fill", (d) => color(white));
         // d3.select(this).transition().style("fill", "red");
 
-        const MAX_ZOOM_SCALE = 3; // You can tweak this value
+        const MAX_ZOOM_SCALE = 5; // You can tweak this value
         const scale = Math.min(MAX_ZOOM_SCALE, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height));
 
         const translateX = width / 2 - scale * d.x;
         const translateY = height / 2 - scale * d.y;
 
-        svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale), d3.pointer(event, svg.node()));
+        svg.transition().duration(1000).call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale), d3.pointer(event, svg.node()));
+
+        // test: navigate to map route after click
+        // Delay the navigation by 1500ms
+        setTimeout(() => {
+          router.push("/map");
+        }, 1500);
       }
 
       function zoomed(event) {
@@ -177,13 +206,15 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="abstractMapContainer">
     <svg ref="svgRef"></svg>
   </div>
 </template>
 
 <style scoped>
-svg {
-  border: 1px solid black;
+.abstractMapContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 </style>
