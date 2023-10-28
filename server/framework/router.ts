@@ -96,7 +96,7 @@ export class Router {
 
   private makeRoute(f: Function) {
     return async (req: Request, res: Response) => {
-      console.log("makeRoute Incoming request body:", req.body);
+      // console.log("makeRoute Incoming request body:", req.body);
       const reqMap = (name: string) => {
         if (name === "session" || name == "param" || name == "query" || name == "body") {
           return req[name];

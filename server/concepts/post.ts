@@ -8,14 +8,15 @@ export interface PostOptions {
   visibility: string;
 }
 
+export type PostType = "article" | "quesiton" | "wiki";
+
 // Is it the best place to put an interface?
 export interface PostFilter {
   authorId?: ObjectId;
   title?: string;
+  postType?: PostType;
   tags?: { $in: string[] };
 }
-
-export type PostType = "article" | "quesiton" | "wiki";
 
 export interface PostDoc extends BaseDoc {
   author: ObjectId;

@@ -31,10 +31,10 @@ const deleteReply = async () => {
 
 async function checkIfLiked(replyId: string) {
   try {
-    console.log("Checking if reply is liked:", replyId);
+    // console.log("Checking if reply is liked:", replyId);
     const userLikes = await fetchy(`/api/likes`, "GET"); // Get all likes for the current user
     isLiked.value = userLikes.liked.includes(replyId);
-    console.log("checkIfLiked isLiked = ", isLiked.value);
+    // console.log("checkIfLiked isLiked = ", isLiked.value);
   } catch (err) {
     console.error("Error checking like status:", err);
   }
@@ -46,7 +46,7 @@ async function getLikes(replyId?: string) {
   // console.log("postId = ", postId);
   try {
     likesResults = await fetchy(`/api/likes/${replyId}/like-count`, "GET");
-    console.log("getLikes likesResults = ", likesResults);
+    // console.log("getLikes likesResults = ", likesResults);
     likesCount.value = likesResults.count;
   } catch (_) {
     return;

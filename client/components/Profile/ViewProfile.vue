@@ -50,12 +50,12 @@ async function getProfile() {
   let profileResult;
   try {
     // profileResult = await fetchy(`api/profile/${username}`, "GET", { query });
-    console.log(`getProfile api/profile/${currentUsername.value}`);
+    // console.log(`getProfile api/profile/${currentUsername.value}`);
     profileResult = await fetchy(`api/profile/${currentUsername.value}`, "GET");
 
-    console.log("getProfile, profileResult=", profileResult);
+    // console.log("getProfile, profileResult=", profileResult);
   } catch (_) {
-    console.log("getProfile, error");
+    // console.log("getProfile, error");
     return;
   }
   initProfile.value = profileResult;

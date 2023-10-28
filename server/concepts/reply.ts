@@ -31,7 +31,7 @@ export default class ReplyConcept {
   }
 
   async getReplys(query: Filter<ReplyDoc>) {
-    console.log("Getting replys with query:", query);
+    // console.log("Getting replys with query:", query);
     const replys = await this.replys.readMany(query, {
       sort: { dateUpdated: -1 },
     });
@@ -39,7 +39,7 @@ export default class ReplyConcept {
   }
 
   async getRepliesByPostId(queryPostID: ObjectId) {
-    console.log("Getting replies by post ID:", queryPostID);
+    // console.log("Getting replies by post ID:", queryPostID);
     return await this.getReplys({ relatedPost: queryPostID });
   }
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ButtonGroup from "@/components/Button/ButtonGroup.vue";
 import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
@@ -26,8 +25,7 @@ onMounted(() => {
     </section>
 
     <div>
-      <ButtonGroup :buttons="['Blogs', 'Q&A', 'Wiki']" :modelValue="selectedCategory" @update:modelValue="(val) => (selectedCategory = val)" />
-      <ButtonGroup :buttons="['Latest', 'Trending', 'Nearby']" :modelValue="selectedFilter" @update:modelValue="(val) => (selectedFilter = val)" />
+      <!-- <ButtonGroup :buttons="['Latest', 'Trending', 'Nearby']" :modelValue="selectedFilter" @update:modelValue="(val) => (selectedFilter = val)" /> -->
 
       <!-- Display Selected -->
       <div>Selected Category: {{ selectedCategory }} Selected Filter: {{ selectedFilter }}</div>

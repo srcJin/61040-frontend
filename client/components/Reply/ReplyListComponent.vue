@@ -21,7 +21,7 @@ let editing = ref("");
 async function getReplies(postId: string) {
   let replyResults;
   try {
-    console.log("getReplies api/replies/${postId}", `api/replies/${postId}`);
+    // console.log("getReplies api/replies/${postId}", `api/replies/${postId}`);
     replyResults = await fetchy(`api/replies/${postId}`, "GET");
     // console.log("replyResults", replyResults);
   } catch (_) {

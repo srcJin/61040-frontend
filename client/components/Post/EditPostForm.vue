@@ -5,9 +5,9 @@ import { formatDate } from "../../utils/formatDate";
 
 const props = defineProps(["post"]);
 const content = ref(props.post.content);
-console.log("props", props);
-console.log("props.post=", props.post);
-console.log("props.post.content=", props.post.content);
+// console.log("props", props);
+// console.log("props.post=", props.post);
+// console.log("props.post.content=", props.post.content);
 const emit = defineEmits(["editPost", "refreshPosts"]);
 
 const editPost = async (content: string) => {

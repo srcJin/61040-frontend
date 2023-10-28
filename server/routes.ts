@@ -114,7 +114,7 @@ class Routes {
   @Router.get("/posts")
   // get posts can search by author, title, timeframe and tags
   // now it has many ifs, will try to make it more modularized
-  async getPosts(author?: string, title?: string) {
+  async getPosts(author?: string, title?: string, postType?: string) {
     const filter: PostFilter = {};
 
     if (author) {
@@ -124,6 +124,10 @@ class Routes {
 
     if (title) {
       filter.title = title;
+    }
+
+    if (postType) {
+      filter.postType = postType;
     }
 
     const posts = await Post.getPosts(filter);

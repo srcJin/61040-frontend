@@ -47,7 +47,7 @@ async function getLikes(postId?: string) {
   // console.log("postId = ", postId);
   try {
     likesResults = await fetchy(`/api/likes/${postId}/like-count`, "GET");
-    console.log("getLikes likesResults = ", likesResults);
+    // console.log("getLikes likesResults = ", likesResults);
     likesCount.value = likesResults.count;
   } catch (_) {
     return;
@@ -61,13 +61,13 @@ async function toggleLike() {
     console.log("Toggling like for post:", props.post._id);
     if (isLiked.value) {
       // If the post is already liked, remove the like
-      console.log("isLiked", isLiked.value);
+      // console.log("isLiked", isLiked.value);
       await fetchy(`/api/likes/${props.post._id}`, "DELETE");
       isLiked.value = false;
       likesCount.value--;
     } else {
       // If the post is not liked, add the like
-      console.log("isLiked", isLiked.value);
+      // console.log("isLiked", isLiked.value);
       await fetchy(`/api/likes/${props.post._id}`, "POST");
       isLiked.value = true;
       likesCount.value++;
@@ -97,10 +97,10 @@ async function toggleFavorite() {
 
 async function checkIfLiked(postId: string) {
   try {
-    console.log("Checking if post is liked:", postId);
+    // console.log("Checking if post is liked:", postId);
     const userLikes = await fetchy(`/api/likes`, "GET"); // Get all likes for the current user
     isLiked.value = userLikes.liked.includes(postId);
-    console.log("checkIfLiked isLiked = ", isLiked.value);
+    // console.log("checkIfLiked isLiked = ", isLiked.value);
   } catch (err) {
     console.error("Error checking like status:", err);
   }
@@ -108,11 +108,11 @@ async function checkIfLiked(postId: string) {
 
 async function checkIfFavorited(postId: string) {
   try {
-    console.log("Checking if post is liked:", postId);
+    // console.log("Checking if post is liked:", postId);
     const userFavorited = await fetchy(`/api/favorites`, "GET"); // Get all likes for the current user
-    console.log("checkIfFavorited userFavorited = ", userFavorited);
+    // console.log("checkIfFavorited userFavorited = ", userFavorited);
     isFavorited.value = userFavorited.favorites.includes(postId);
-    console.log("checkIfLiked isFavorited = ", isFavorited.value);
+    // console.log("checkIfLiked isFavorited = ", isFavorited.value);
   } catch (err) {
     console.error("Error checking like status:", err);
   }

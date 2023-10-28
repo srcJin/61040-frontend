@@ -48,7 +48,7 @@ export default class FavoriteConcept {
 
   async getFavorites(user: ObjectId) {
     const favorites = await this.favorites.readOne({ user });
-    console.log("getFavorites", favorites);
+    // console.log("getFavorites", favorites);
     return favorites ? favorites.entityIds : [];
   }
 

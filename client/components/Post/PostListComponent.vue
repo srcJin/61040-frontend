@@ -5,7 +5,8 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import SearchPostForm from "./SearchPostForm.vue";
+
+let selectedType = ref(""); // empty means no filter applied
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 
@@ -14,12 +15,21 @@ let posts = ref<Array<Record<string, string>>>([]);
 let editing = ref("");
 let searchAuthor = ref("");
 
+function filterByType(type: string) {
+  selectedType.value = type;
+  getPosts();
+}
+
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
+  // here use the ref storage to store the selected types
+  if (selectedType.value) {
+    query.postType = selectedType.value;
+  }
   let postResults;
   try {
     postResults = await fetchy("api/posts", "GET", { query });
-    console.log("postResults", postResults);
+    // console.log("postResults", postResults);
   } catch (_) {
     return;
   }
@@ -38,14 +48,16 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <!-- <section v-if="isLoggedIn">
-    <h2>Create a post:</h2>
-    <CreatePostForm @refreshPosts="getPosts" />
-  </section> -->
   <div class="row">
-    <h2 v-if="!searchAuthor"></h2>
+    <div class="type-filters">
+      <button @click="filterByType('article')">Article</button>
+      <button @click="filterByType('question')">Question</button>
+      <button @click="filterByType('wiki')">Wiki</button>
+    </div>
+
+    <!-- <h2 v-if="!searchAuthor"></h2>
     <h2 v-else>Posts by {{ searchAuthor }}:</h2>
-    <SearchPostForm @getPostsByAuthor="getPosts" />
+    <SearchPostForm @getPostsByAuthor="getPosts" /> -->
   </div>
 
   <section class="posts" v-if="loaded && posts.length !== 0">
