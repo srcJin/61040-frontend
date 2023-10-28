@@ -415,33 +415,25 @@ class Routes {
 
   // Add a post to the favorite list
   // Add an item (post/reply/etc.) to the favorite list
-  @Router.post("/favorites/:type/:_id")
-  async addItemToFavorites(session: WebSessionDoc, type: FavoriteType, _id: ObjectId) {
+  @Router.post("/favorites/:_id")
+  async addItemToFavorites(session: WebSessionDoc, _id: ObjectId) {
     const user = WebSession.getUser(session);
-    return await Favorite.addFavorite(user, type, _id);
+    return await Favorite.addFavorite(user, _id);
   }
 
   // Remove an item (post/reply/etc.) from favorites
-  @Router.delete("/favorites/:type/:_id")
-  async removeItemFromFavorites(session: WebSessionDoc, type: FavoriteType, _id: ObjectId) {
+  @Router.delete("/favorites/:_id")
+  async removeItemFromFavorites(session: WebSessionDoc, _id: ObjectId) {
     const user = WebSession.getUser(session);
-    return await Favorite.removeFavorite(user, type, _id);
-  }
-
-  // Get all favorites of a specific type (post/reply/etc.) for a user
-  @Router.get("/favorites/:type")
-  async getFavoritesByType(session: WebSessionDoc, type: FavoriteType) {
-    const user = WebSession.getUser(session);
-    return await Favorite.getFavorites(user, type);
+    return await Favorite.removeFavorite(user, _id);
   }
 
   // Get all favorites for a user
   @Router.get("/favorites")
   async getAllFavorites(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    const favoritePosts = await Favorite.getFavorites(user, "post");
-    const favoriteReplies = await Favorite.getFavorites(user, "reply");
-    return { favoritePosts, favoriteReplies };
+    const favorites = await Favorite.getFavorites(user);
+    return { favorites };
   }
 
   // Check if an item (post/reply/etc.) is in the favorites list
@@ -454,53 +446,33 @@ class Routes {
   // Like[Post] routes
 
   // Like a post
-  @Router.post("/likes/post/:_id")
-  async addPostLike(session: WebSessionDoc, _id: ObjectId) {
+  @Router.post("/likes/:_id")
+  async addLike(session: WebSessionDoc, _id: ObjectId) {
     const user = WebSession.getUser(session);
-    return await Like.addLike(user, "post", _id);
+    return await Like.addLike(user, _id);
   }
 
   // Unlike a post
-  @Router.delete("/likes/post/:_id")
-  async removePostLike(session: WebSessionDoc, _id: ObjectId) {
+  @Router.delete("/likes/:_id")
+  async removeLike(session: WebSessionDoc, _id: ObjectId) {
     const user = WebSession.getUser(session);
-    return await Like.removeLike(user, "post", _id);
-  }
-
-  // Like a reply
-  @Router.post("/likes/reply/:_id")
-  async addReplyLike(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
-    const user = WebSession.getUser(session);
-    return await Like.addLike(user, "reply", replyId);
-  }
-
-  // Unlike a reply
-  @Router.delete("/likes/reply/:_id")
-  async removeReplyLike(session: WebSessionDoc, _id: ObjectId, replyId: ObjectId) {
-    const user = WebSession.getUser(session);
-    return await Like.removeLike(user, "reply", replyId);
+    return await Like.removeLike(user, _id);
   }
 
   // Get all likes for a user
   @Router.get("/likes")
   async getAllLikes(session: WebSessionDoc) {
     const user = WebSession.getUser(session);
-    const likedPosts = await Like.getUserLikes(user, "post");
-    const likedReplies = await Like.getUserLikes(user, "reply");
-    return { likedPosts, likedReplies };
+    const liked = await Like.getUserLikes(user);
+    return { liked };
   }
 
   // Get the like count for a post
-  @Router.get("/likes/post/:id/like-count")
-  async getPostLikeCount(_id: ObjectId) {
-    return { count: await Like.getLikeCount("post", _id) };
+  @Router.get("/likes/:id/like-count")
+  async getLikeCount(_id: ObjectId) {
+    return { count: await Like.getLikeCount(_id) };
   }
 
-  // Get the like count for a reply
-  @Router.get("/likes/reply/:id/like-count")
-  async getReplyLikeCount(_id: ObjectId) {
-    return { count: await Like.getLikeCount("reply", _id) };
-  }
   // Tags routes
 
   @Router.get("/tags")

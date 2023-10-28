@@ -47,7 +47,7 @@ const emptyForm = () => {
     </div>
 
     <!-- <label for="post-title">Title:</label> -->
-    <input id="post-title" v-model="title" placeholder="Write a title!" type="text" />
+    <textarea id="post-title" v-model="title" placeholder="Write a title!" type="text"></textarea>
 
     <!-- <label for="post-content">Contents:</label> -->
     <textarea id="post-content" v-model="content" placeholder="Write Something!" required></textarea>
