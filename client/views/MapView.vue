@@ -6,7 +6,8 @@ import { LMap, LTileLayer, LControlLayers } from "@vue-leaflet/vue-leaflet";
 import { LCircle, LCircleMarker, LIcon, LMarker, LPolygon, LPolyline, LRectangle, LTooltip, LWmsTileLayer, LPopup } from "@vue-leaflet/vue-leaflet";
 import { ref } from "vue";
 import { LMarkerClusterGroup } from "vue-leaflet-markercluster";
-
+import { fetchy } from "../utils/fetchy";
+import { onBeforeMount } from "vue";
 import "vue-leaflet-markercluster/dist/style.css";
 
 // https://github.com/vue-leaflet/vue-leaflet/issues/278
@@ -35,6 +36,67 @@ export default {
     const coordinates = ref([42.407211, -71.382439]);
     const markers = ref(generateRandomMarkers(20));
 
+    let userCards = ref([]);
+
+    onBeforeMount(async () => {
+      userCards.value = await fetchUserCards();
+    });
+
+    async function getUsernames() {
+      try {
+        const users = await fetchy("api/users", "GET");
+        return users.map((user) => user.username); // Assuming each user object has a 'username' property
+      } catch (error) {
+        console.error("Error fetching usernames:", error);
+        return [];
+      }
+    }
+
+    async function getUserProfile(username) {
+      try {
+        return await fetchy(`api/profile/${username}`, "GET");
+      } catch (error) {
+        console.error(`Error fetching profile for ${username}:`, error);
+        return null;
+      }
+    }
+
+    async function getPosts(author) {
+      let query = author ? { author: author } : {};
+      try {
+        const postResults = await fetchy("/api/posts", "GET", { query });
+        console.log("postResults", postResults);
+        return postResults;
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        return [];
+      }
+    }
+
+    async function fetchUserCards() {
+      const usernames = await getUsernames();
+      const userCards = [];
+
+      for (let username of usernames) {
+        const userProfile = await getUserProfile(username);
+        const userPosts = await getPosts(username);
+        console.log("userProfile", userProfile);
+        if (userProfile) {
+          userCards.push({
+            // here I randomly assigned lat and lng, but will later use profile's real data
+            lat: 42.407211 + Math.random() * 0.5, // Assuming lastLocation is an array of [lat, lng]
+            lng: -71.382439 + Math.random() * 0.5,
+            user: {
+              name: userProfile.nickname,
+              posts: userPosts,
+            },
+          });
+        }
+      }
+      console.log("userCards", userCards);
+      return userCards;
+    }
+
     function generateRandomMarkers(count) {
       const markersArray = [];
       for (let i = 0; i < count; i++) {
@@ -53,6 +115,7 @@ export default {
       zoom,
       coordinates,
       markers,
+      userCards,
     };
   },
 };
@@ -88,42 +151,46 @@ export default {
       </l-marker>
 
       <l-marker-cluster-group>
-        <l-marker v-for="marker in markers" :key="marker.user.name" :lat-lng="[marker.lat, marker.lng]">
+        <l-marker v-for="userCard in userCards" :key="userCard.user.name" :lat-lng="[userCard.lat, userCard.lng]">
           <l-popup>
             <div class="namecard">
               <div class="namecard-header">
+                <!-- Placeholder User Icon -->
                 <img src="https://xsgames.co/randomusers/avatar.php?g=male" alt="User Icon" class="user-icon" />
                 <div>
                   <div>
-                    <username>{{ marker.user.name }}</username>
-                    <button class="relationship-btn">
-                      {{ marker.user.relationship ? marker.user.relationship : "Follow" }}
-                    </button>
+                    <username>{{ userCard.user.name }}</username>
+                    <!-- Defaulted to "Follow" as you did not have relationship data in your example userCards -->
+                    <button class="relationship-btn">Follow</button>
                   </div>
-                  <p class="user-description">Defualt discription</p>
-                  <p class="user-description">{{ marker.user.description }}</p>
+                  <!-- Default Description -->
+                  <p class="user-description">Default description</p>
+                  <!-- If the user description exists, display it. Otherwise, keep the default. -->
+                  <p v-if="userCard.user.description" class="user-description">{{ userCard.user.description }}</p>
                 </div>
               </div>
 
-              <div v-for="post in marker.user.posts" :key="post.content" class="post">
-                <p class="user-description">Defualt post content, delete later</p>
-
-                <p>{{ post.content }}</p>
-                <div class="interaction-buttons">
-                  <button class="comment-btn">
-                    <img src="../assets/images/comment.svg" alt="Comment Icon" />
-                    <span>Comment</span>
-                  </button>
-
-                  <button class="like-btn">
-                    <img src="../assets/images/like.svg" alt="Like Icon" />
-                    <span>Like</span>
-                  </button>
-
-                  <button class="share-btn">
-                    <img src="../assets/images/share.svg" alt="Share Icon" />
-                    <span>Share</span>
-                  </button>
+              <div class="posts-container">
+                <div v-for="post in userCard.user.posts" :key="post" class="post">
+                  <!-- Display Post Content -->
+                  <h2 class="post-title">{{ post.title }}</h2>
+                  <hr class="divider" />
+                  <p class="post-content">{{ post.content }}</p>
+                  <div class="interaction-buttons">
+                    <!-- Interaction Buttons, kept as they were -->
+                    <button class="comment-btn">
+                      <img src="../assets/images/comment.svg" alt="Comment Icon" />
+                      <span>Comment</span>
+                    </button>
+                    <button class="like-btn">
+                      <img src="../assets/images/like.svg" alt="Like Icon" />
+                      <span>Like</span>
+                    </button>
+                    <button class="share-btn">
+                      <img src="../assets/images/share.svg" alt="Share Icon" />
+                      <span>Share</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -217,8 +284,10 @@ export default {
 .share-btn,
 .relationship-btn {
   display: flex;
-  align-items: center; /* vertically center the icon and text */
-  justify-content: center; /* horizontally center the content */
+  align-items: center;
+  /* vertically center the icon and text */
+  justify-content: center;
+  /* horizontally center the content */
   padding: 5px 5px;
   border: none;
   border-radius: 5px;
@@ -232,8 +301,10 @@ export default {
 .share-btn img {
   width: 20px;
   height: 10px;
-  margin-right: 5px; /* Optional: Add a little margin for spacing between the icon and the text */
-  vertical-align: middle; /* This ensures the icon aligns well with the button text */
+  margin-right: 5px;
+  /* Optional: Add a little margin for spacing between the icon and the text */
+  vertical-align: middle;
+  /* This ensures the icon aligns well with the button text */
 }
 
 .comment-btn:hover,
@@ -245,5 +316,38 @@ export default {
 
 .relationship-btn {
   margin-bottom: 1rem;
+}
+
+.posts-container {
+  border-radius: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.post {
+  background-color: #ffffff;
+  /* padding: 12px 16px; */
+  margin-bottom: 12px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.post-title {
+  font-size: 1em;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #eaeaea;
+  margin: 8px 0;
+}
+
+.post-content {
+  font-size: 1em;
+  margin: 8px 0;
+  color: #555;
 }
 </style>

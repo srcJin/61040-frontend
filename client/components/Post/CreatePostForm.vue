@@ -8,7 +8,7 @@ const postType = ref("");
 
 const emit = defineEmits(["refreshPosts"]);
 
-const createPost = async (title: string, content: string, postType: string) => {
+const createPost = async (title: string, content: string, postType: PostType) => {
   try {
     await fetchy("api/posts", "POST", {
       body: { title: title, content: content, postType: postType },

@@ -12,7 +12,7 @@ export type PostType = "article" | "quesiton" | "wiki";
 
 // Is it the best place to put an interface?
 export interface PostFilter {
-  authorId?: ObjectId;
+  author?: ObjectId;
   title?: string;
   postType?: PostType;
   tags?: { $in: string[] };
@@ -48,14 +48,14 @@ export default class PostConcept {
     return await this.getPosts({ author });
   }
 
-  // a shortcut method to return posts type by id
-  async getPostType(_id: ObjectId): Promise<PostType> {
-    const post = await this.posts.readOne({ _id });
-    if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
-    }
-    return post.postType;
-  }
+  // // a shortcut method to return posts type by id
+  // async getPostType(_id: ObjectId): Promise<PostType> {
+  //   const post = await this.posts.readOne({ _id });
+  //   if (!post) {
+  //     throw new NotFoundError(`Post ${_id} does not exist!`);
+  //   }
+  //   return post.postType;
+  // }
 
   async update(_id: ObjectId, update: Partial<PostDoc>) {
     this.sanitizeUpdate(update);

@@ -55,7 +55,7 @@ async function getProfile() {
 
     // console.log("getProfile, profileResult=", profileResult);
   } catch (_) {
-    // console.log("getProfile, error");
+    console.log("getProfile, error");
     return;
   }
   initProfile.value = profileResult;
