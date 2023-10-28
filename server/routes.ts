@@ -120,7 +120,7 @@ class Routes {
     if (author) {
       // TODO why author adds a ?
       const username = (await User.getUserByUsername(author))._id;
-      console.log("routes getPosts username=", username);
+      // console.log("routes getPosts username=", username);
       filter.author = username;
     }
 
