@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import likedIcon from "@/assets/eva_fill/heart-fill.svg";
-import favoritedIcon from "@/assets/eva_fill/star-fill.svg";
+import likedIcon from "@/assets/eva_fill/heart.svg";
+import favoritedIcon from "@/assets/eva_fill/star.svg";
 import wikiIcon from "@/assets/eva_outline/book-outline.svg";
 import questionIcon from "@/assets/eva_outline/bulb-outline.svg";
 import articleIcon from "@/assets/eva_outline/file-text-outline.svg";
@@ -21,6 +21,7 @@ const { currentUsername } = storeToRefs(useUserStore());
 
 let likes = ref<Array<Record<string, string>>>([]);
 let likesCount = ref(0); // store the fetched like count
+let isLiked = ref(false); // Initialize the ref to store liked status
 let isFavorited = ref(false); // Initialize the ref to store favorited status
 
 const icons = {
@@ -45,43 +46,80 @@ async function getLikes(postId?: string) {
   let likesResults;
   // console.log("postId = ", postId);
   try {
-    likesResults = await fetchy(`/api/likes/post/${postId}/like-count`, "GET");
-    // console.log("likesResults", likesResults);
+    likesResults = await fetchy(`/api/likes/${postId}/like-count`, "GET");
+    console.log("likesResults", likesResults);
+    likesCount.value = likesResults.count;
   } catch (_) {
     return;
   }
 
   likes.value = likesResults;
-
-  async function addLike() {
-    // Placeholder function for handling the "Like" action
-    console.log("Liked post:", props.post._id);
-    // Here, you'll implement logic to add a like, and maybe refresh likes count
-  }
-
-  async function addFavorite() {
-    // Placeholder function for handling the "Favorite" action
-    console.log("Favorited post:", props.post._id);
-    // Here, you'll implement logic to add a favorite, and maybe update isFavorited status
-  }
-
-  async function checkIfFavorited(postId: string) {
-    try {
-      const result = await fetchy(`/api/favorites/isFavorite/${postId}`, "GET");
-      isFavorited.value = result.isFavorite; // returns a boolean "isFavorite" property
-      console.log("isFavorited", isFavorited.value);
-    } catch (err) {
-      console.error("Error checking favorite status:", err);
-    }
-  }
-
-  onMounted(async () => {
-    if (props.post._id) {
-      await checkIfFavorited(props.post._id);
-      await getLikes(props.post._id);
-    }
-  });
 }
+
+async function toggleLike() {
+  try {
+    console.log("Toggling like for post:", props.post._id);
+    if (isLiked.value) {
+      // If the post is already liked, remove the like
+      console.log("isLiked", isLiked.value);
+      await fetchy(`/api/likes/${props.post._id}`, "DELETE");
+      isLiked.value = false;
+      likesCount.value--;
+    } else {
+      // If the post is not liked, add the like
+      console.log("isLiked", isLiked.value);
+      await fetchy(`/api/likes/${props.post._id}`, "POST");
+      isLiked.value = true;
+      likesCount.value++;
+    }
+  } catch (err) {
+    console.error("Error toggling like:", err);
+  }
+}
+
+async function toggleFavorite() {
+  try {
+    if (isFavorited.value) {
+      // If the post is already favorited, remove from favorites
+      await fetchy(`/api/favorites/${props.post._id}`, "DELETE");
+      isFavorited.value = false;
+    } else {
+      // If the post is not favorited, add to favorites
+      await fetchy(`/api/favorites/${props.post._id}`, "POST");
+      isFavorited.value = true;
+    }
+  } catch (err) {
+    console.error("Error toggling favorite:", err);
+  }
+}
+
+async function checkIfLiked(postId: string) {
+  try {
+    console.log("Checking if post is liked:", postId);
+    const userLikes = await fetchy(`/api/likes`, "GET"); // Get all likes for the current user
+    isLiked.value = userLikes.liked.includes(postId);
+  } catch (err) {
+    console.error("Error checking like status:", err);
+  }
+}
+
+async function checkIfFavorited(postId: string) {
+  try {
+    const result = await fetchy(`/api/favorites/isFavorite/${postId}`, "GET");
+    isFavorited.value = result.isFavorite; // returns a boolean "isFavorite" property
+    console.log("isFavorited", isFavorited.value);
+  } catch (err) {
+    console.error("Error checking favorite status:", err);
+  }
+}
+
+onMounted(async () => {
+  if (props.post._id) {
+    await checkIfFavorited(props.post._id);
+    await getLikes(props.post._id);
+    await checkIfLiked(props.post._id);
+  }
+});
 </script>
 
 <template>
@@ -102,13 +140,13 @@ async function getLikes(postId?: string) {
     </div>
 
     <div class="interaction-icons">
-      <button class="icon-button" @click="addLike">
-        <img v-if="likesCount > 0" :src="likedIcon" alt="Liked Icon" />
+      <button class="icon-button" @click="toggleLike">
+        <img v-if="isLiked" :src="likedIcon" alt="Liked Icon" />
         <img v-else :src="likeIcon" alt="Like Icon" />
       </button>
       <span>Likes: {{ likesCount }}</span>
 
-      <button class="icon-button" @click="addFavorite">
+      <button class="icon-button" @click="toggleFavorite">
         <img v-if="isFavorited" :src="favoritedIcon" alt="Favorited Icon" />
         <img v-else :src="favoriteIcon" alt="Favorite Icon" />
       </button>

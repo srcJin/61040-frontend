@@ -23,7 +23,7 @@ async function getReplies(postId: string) {
   try {
     console.log("getReplies api/replies/${postId}", `api/replies/${postId}`);
     replyResults = await fetchy(`api/replies/${postId}`, "GET");
-    console.log("replyResults", replyResults);
+    // console.log("replyResults", replyResults);
   } catch (_) {
     return;
   }

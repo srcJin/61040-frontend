@@ -5,12 +5,15 @@ import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
-import likedIcon from "@/assets/eva_fill/heart-fill.svg";
+import likedIcon from "@/assets/eva_fill/heart.svg";
 import likeIcon from "@/assets/eva_outline/heart-outline.svg";
+
+let isLiked = ref(false); // Initialize the ref to store liked status
 
 // define props
 const props = defineProps(["reply"]);
-const emit = defineEmits(["editReply", "refreshReplys"]);
+// here was a bug that we didn't define the refreshReplies
+const emit = defineEmits(["editReply", "refreshReplys", "refreshReplies"]);
 const { currentUsername } = storeToRefs(useUserStore());
 let likes = ref<Array<Record<string, string>>>([]);
 let likesCount = ref(0); // store the fetched like count
@@ -30,29 +33,40 @@ const deleteReply = async () => {
 async function getLikes(replyId?: string) {
   if (!replyId) return;
   let likesResults;
-  // console.log("replyId = ", replyId);
   try {
-    likesResults = await fetchy(`/api/likes/reply/${replyId}/like-count`, "GET");
-    // console.log("likesResults", likesResults);
+    likesResults = await fetchy(`/api/likes/${replyId}/like-count`, "GET");
   } catch (_) {
     return;
   }
-
   likes.value = likesResults;
-
-  async function addLike() {
-    // Placeholder function for handling the "Like" action for reply
-    console.log("Liked reply:", props.reply._id);
-    // Here, you'll implement logic to add a like for the reply, and maybe refresh likes count
-  }
-
-  onMounted(async () => {
-    if (props.reply._id) {
-      await checkIfFavorited(props.reply._id);
-      await getLikes(props.reply._id);
-    }
-  });
 }
+
+async function toggleLike() {
+  try {
+    console.log("Toggling like for reply:", props.reply._id);
+    if (isLiked.value) {
+      // If the post is already liked, remove the like
+      console.log("isLiked", isLiked.value);
+      await fetchy(`/api/likes/${props.reply._id}`, "DELETE");
+      isLiked.value = false;
+      likesCount.value--;
+    } else {
+      // If the post is not liked, add the like
+      console.log("isLiked", isLiked.value);
+      await fetchy(`/api/likes/${props.reply._id}`, "POST");
+      isLiked.value = true;
+      likesCount.value++;
+    }
+  } catch (err) {
+    console.error("Error toggling like:", err);
+  }
+}
+
+onMounted(async () => {
+  if (props.reply._id) {
+    await getLikes(props.reply._id);
+  }
+});
 </script>
 
 <template>
@@ -67,7 +81,7 @@ async function getLikes(replyId?: string) {
     </menu>
 
     <div class="interaction-icons">
-      <button class="icon-button" @click="addLike">
+      <button class="icon-button" @click="toggleLike">
         <img v-if="likesCount > 0" :src="likedIcon" alt="Liked Icon" />
         <img v-else :src="likeIcon" alt="Like Icon" />
       </button>
