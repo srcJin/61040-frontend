@@ -47,7 +47,7 @@ async function getLikes(postId?: string) {
   // console.log("postId = ", postId);
   try {
     likesResults = await fetchy(`/api/likes/${postId}/like-count`, "GET");
-    console.log("likesResults", likesResults);
+    console.log("getLikes likesResults = ", likesResults);
     likesCount.value = likesResults.count;
   } catch (_) {
     return;
@@ -83,9 +83,11 @@ async function toggleFavorite() {
       // If the post is already favorited, remove from favorites
       await fetchy(`/api/favorites/${props.post._id}`, "DELETE");
       isFavorited.value = false;
+      console.log("toggleFavorite removing favorited , isFavorited = ", isFavorited.value);
     } else {
       // If the post is not favorited, add to favorites
       await fetchy(`/api/favorites/${props.post._id}`, "POST");
+      console.log("toggleFavorite adding favorited , isFavorited = ", isFavorited.value);
       isFavorited.value = true;
     }
   } catch (err) {
@@ -98,6 +100,7 @@ async function checkIfLiked(postId: string) {
     console.log("Checking if post is liked:", postId);
     const userLikes = await fetchy(`/api/likes`, "GET"); // Get all likes for the current user
     isLiked.value = userLikes.liked.includes(postId);
+    console.log("checkIfLiked isLiked = ", isLiked.value);
   } catch (err) {
     console.error("Error checking like status:", err);
   }
@@ -107,7 +110,7 @@ async function checkIfFavorited(postId: string) {
   try {
     const result = await fetchy(`/api/favorites/isFavorite/${postId}`, "GET");
     isFavorited.value = result.isFavorite; // returns a boolean "isFavorite" property
-    console.log("isFavorited", isFavorited.value);
+    console.log("checkIfFavorited isFavorited = ", isFavorited.value);
   } catch (err) {
     console.error("Error checking favorite status:", err);
   }

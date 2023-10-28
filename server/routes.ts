@@ -468,7 +468,7 @@ class Routes {
   }
 
   // Get the like count for a post
-  @Router.get("/likes/:id/like-count")
+  @Router.get("/likes/:_id/like-count")
   async getLikeCount(_id: ObjectId) {
     return { count: await Like.getLikeCount(_id) };
   }

@@ -49,7 +49,7 @@ onBeforeMount(async () => {
   </section>
   <p v-else-if="loaded">No replies found</p>
   <p v-else>Loading...</p>
-  <CreateReplyForm :postId="postId" @refreshReplys="getReplies" />
+  <CreateReplyForm :postId="postId" @refreshReplies="getReplies" />
 </template>
 
 <style scoped>

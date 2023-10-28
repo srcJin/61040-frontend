@@ -17,7 +17,6 @@ const emit = defineEmits(["editReply", "refreshReplys", "refreshReplies"]);
 const { currentUsername } = storeToRefs(useUserStore());
 let likes = ref<Array<Record<string, string>>>([]);
 let likesCount = ref(0); // store the fetched like count
-let isFavorited = ref(false); // Initialize the ref to store favorited status
 
 // console.log("props", props);
 
@@ -30,14 +29,29 @@ const deleteReply = async () => {
   emit("refreshReplys");
 };
 
+async function checkIfLiked(replyId: string) {
+  try {
+    console.log("Checking if reply is liked:", replyId);
+    const userLikes = await fetchy(`/api/likes`, "GET"); // Get all likes for the current user
+    isLiked.value = userLikes.liked.includes(replyId);
+    console.log("checkIfLiked isLiked = ", isLiked.value);
+  } catch (err) {
+    console.error("Error checking like status:", err);
+  }
+}
+
 async function getLikes(replyId?: string) {
   if (!replyId) return;
   let likesResults;
+  // console.log("postId = ", postId);
   try {
     likesResults = await fetchy(`/api/likes/${replyId}/like-count`, "GET");
+    console.log("getLikes likesResults = ", likesResults);
+    likesCount.value = likesResults.count;
   } catch (_) {
     return;
   }
+
   likes.value = likesResults;
 }
 
@@ -65,6 +79,7 @@ async function toggleLike() {
 onMounted(async () => {
   if (props.reply._id) {
     await getLikes(props.reply._id);
+    await checkIfLiked(props.reply._id);
   }
 });
 </script>
