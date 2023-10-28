@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import { onMounted } from "vue";
 import data from "@/assets/data.json";
 import { useRouter } from "vue-router";
-// console.log("us", us);
+import { useMapStore } from "@/stores/map";
 
 export default {
   name: "HorizontalBar",
@@ -24,7 +24,7 @@ export default {
     },
   },
 
-  setup(props) {
+  setup(props, { emit }) {
     const svgRef = ref(null);
     const router = useRouter();
 
@@ -172,6 +172,19 @@ export default {
         const translateY = height / 2 - scale * d.y;
 
         svg.transition().duration(1000).call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(scale), d3.pointer(event, svg.node()));
+
+        // emit the clicked region data
+        const clickedData = {
+          id: d.data.id,
+          lat: d.data.lat,
+          lng: d.data.lng,
+        };
+        emit("region-clicked", clickedData); // Emitting a custom event with the clicked data
+
+        const mapStore = useMapStore();
+        mapStore.setCoordinates(clickedData.lat, clickedData.lng);
+
+        console.log("clickedData", clickedData);
 
         // test: navigate to map route after click
         // Delay the navigation by 1500ms

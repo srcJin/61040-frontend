@@ -3,38 +3,40 @@ import L from "leaflet";
 globalThis.L = L;
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LControlLayers } from "@vue-leaflet/vue-leaflet";
-import { LCircle, LCircleMarker, LIcon, LMarker, LPolygon, LPolyline, LRectangle, LTooltip, LWmsTileLayer, LPopup } from "@vue-leaflet/vue-leaflet";
+import { LMarker, LTooltip, LWmsTileLayer, LPopup } from "@vue-leaflet/vue-leaflet";
 import { ref } from "vue";
 import { LMarkerClusterGroup } from "vue-leaflet-markercluster";
 import { fetchy } from "../utils/fetchy";
 import { onBeforeMount } from "vue";
 import "vue-leaflet-markercluster/dist/style.css";
+import { useMapStore } from "@/stores/map";
 
 // https://github.com/vue-leaflet/vue-leaflet/issues/278
-
-let coordinates = [42.407211, -87.65];
 
 export default {
   components: {
     LMap,
     LTileLayer,
     LControlLayers,
-    LCircle,
-    LCircleMarker,
-    LIcon,
     LMarker,
-    LPolygon,
-    LPolyline,
-    LRectangle,
     LTooltip,
     LWmsTileLayer,
     LPopup,
     LMarkerClusterGroup,
   },
   setup() {
-    const zoom = ref(9);
-    const coordinates = ref([42.407211, -71.382439]);
-    const markers = ref(generateRandomMarkers(20));
+    const zoom = ref(4);
+    const mapStore = useMapStore();
+
+    let centerCoordinate = ref([42.407211, -71.382439]);
+    console.log("mapstore", mapStore.lat, mapStore.lng);
+    console.log("centerCoordinate.value", centerCoordinate.value);
+    if (mapStore.lat && mapStore.lng) {
+      centerCoordinate.value = [mapStore.lat, mapStore.lng];
+    }
+    console.log("centerCoordinate.value 2", centerCoordinate.value);
+
+    // const markers = ref(generateRandomMarkers(20));
 
     let userCards = ref([]);
 
@@ -113,8 +115,8 @@ export default {
 
     return {
       zoom,
-      coordinates,
-      markers,
+      centerCoordinate,
+      // markers,
       userCards,
     };
   },
@@ -124,7 +126,7 @@ export default {
 <template>
   <div class="fullscreen-map">
     <!-- will load map status later -->
-    <l-map ref="map" v-model:zoom="zoom" :center="[42.407211, -71.382439]">
+    <l-map ref="map" v-model:zoom="zoom" :center="centerCoordinate">
       <l-wms-tile-layer
         url="https://maps.heigit.org/osmlanduse/service"
         attribution="HeiGIT <a href='osm-wms.de'>OSM WMS</a>"
