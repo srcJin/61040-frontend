@@ -4,6 +4,9 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "strict": true,
+    "compilerOptions": {
+      "allowJs": true,
+    },
     "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
