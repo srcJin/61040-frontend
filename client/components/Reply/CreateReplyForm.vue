@@ -12,11 +12,10 @@ const props = defineProps({
   replyId: String,
 });
 
-const createReply = async (content: string) => {
+const createReply = async (content: string, replyType: string) => {
   try {
-    await fetchy(`api/replies/${props.replyId}`, "reply", {
-      body: { content },
-      replyType: { replyType },
+    await fetchy(`api/replies/${props.replyId}`, "POST", {
+      body: { content: content, replyType: replyType },
     });
     console.log("reply created!", { body: { content }, replyType: { replyType } });
   } catch (error) {
@@ -33,7 +32,7 @@ const emptyForm = () => {
 </script>
 
 <template>
-  <form @submit.prevent="createReply(content)">
+  <form @submit.prevent="createReply(content, replyType)">
     <!-- <input id="reply-title" v-model="title" placeholder="Write a title!" type="text" /> -->
     <textarea id="reply-content" v-model="content" placeholder="Write a reply!" required></textarea>
     <div class="reply-type">

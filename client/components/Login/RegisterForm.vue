@@ -23,11 +23,13 @@ async function createProfileByUsername(username: string, nickname?: string, emai
   try {
     console.log("createProfileByUsername", username, nickname, email, headshotUrl, identity, role);
     await fetchy(`/api/profile/${username}`, "POST", {
-      nickname: nickname,
-      email: email,
-      headshotUrl: headshotUrl,
-      identity: identity,
-      role: role,
+      body: {
+        nickname: nickname,
+        email: email,
+        headshotUrl: headshotUrl,
+        identity: identity,
+        role: role,
+      },
     });
   } catch (error) {
     console.error("Error creating profile:", error);

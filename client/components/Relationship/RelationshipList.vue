@@ -24,7 +24,7 @@ async function getRelationships() {
 
 async function refreshRequests() {
   if (requestChildComponent.value) {
-    await requestChildComponent.value.getRequests();
+    // await requestChildComponent.value.getRequests();
   }
   return;
 }

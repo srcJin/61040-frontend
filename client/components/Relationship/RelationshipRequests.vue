@@ -44,6 +44,7 @@ async function removeRequest(from: string, relType: string) {
 }
 
 onBeforeMount(async () => {
+  await getRequests(relType);
   loaded.value = true;
 });
 </script>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
-
 const content = ref("");
 const title = ref("");
 const postType = ref("");
@@ -12,7 +11,7 @@ const goBack = () => {
   window.history.back();
 };
 
-const createPost = async (title: string, content: string, postType: PostType) => {
+const createPost = async (title: string, content: string, postType: string) => {
   try {
     await fetchy("api/posts", "POST", {
       body: { title: title, content: content, postType: postType },
