@@ -7,6 +7,7 @@ import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
 import { ProfileDoc } from "./concepts/profile";
 
 import { ObjectId } from "mongodb";
+import { ReplyDoc } from "./concepts/reply";
 import { Router } from "./framework/router";
 
 /**
@@ -40,6 +41,20 @@ export default class Responses {
   static async posts(posts: PostDoc[]) {
     const authors = await User.idsToUsernames(posts.map((post) => post.author));
     return posts.map((post, i) => ({ ...post, author: authors[i] }));
+  }
+
+  static async reply(reply: ReplyDoc | null) {
+    if (!reply) {
+      return reply;
+    }
+    const author = await User.getUserById(reply.author);
+    console.log("responses.ts: author: ", author);
+    return { ...reply, author: author.username };
+  }
+
+  static async replies(replies: ReplyDoc[]) {
+    const authors = await User.idsToUsernames(replies.map((reply) => reply.author));
+    return replies.map((reply, i) => ({ ...reply, author: authors[i] }));
   }
 
   /**

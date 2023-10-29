@@ -143,11 +143,11 @@ export default {
   <div class="fullscreen-map">
     <!-- will load map status later -->
     <l-map ref="map" v-model:zoom="zoom" :center="centerCoordinate">
+      <!-- attribution="HeiGIT <a href='osm-wms.de'>OSM WMS</a>" -->
       <l-wms-tile-layer
         url="https://maps.heigit.org/osmlanduse/service"
-        attribution="HeiGIT <a href='osm-wms.de'>OSM WMS</a>"
         layer-type="base"
-        name="osm-wms.de"
+        name="Vegetation Cover"
         :max-zoom="20"
         version="1.3.0"
         format="image/png"
@@ -155,12 +155,9 @@ export default {
         layers="osmlanduse:osm_lulc_combined_osm4eo"
       />
 
-      <l-tile-layer
-        url="http://tile.stamen.com/watercolor/{z}/{x}/{y}.jpg"
-        layer-type="base"
-        name="Stamen Watercolor"
-        attribution="Map tiles by <a href='http://stamen.com'>Stamen Design</a>, under <a href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>. Data by <a href='http://openstreetmap.org'>OpenStreetMap</a>, under <a href='http://creativecommons.org/licenses/by-sa/3.0'>CC BY SA</a>."
-      />
+      <!--  ttribution="Map tiles by <a href='http://stamen.com'>Stamen Design</a>, under <a href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>. Data by <a href='http://openstreetmap.org'>OpenStreetMap</a>, under <a href='http://creativecommons.org/licenses/by-sa/3.0'>CC BY SA</a>."
+ -->
+      <l-tile-layer url="http://tile.stamen.com/watercolor/{z}/{x}/{y}.jpg" layer-type="base" name="Watercolor" />
 
       <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base" name="OpenStreetMap"></l-tile-layer>
 
@@ -179,15 +176,13 @@ export default {
                   <div>
                     <username>{{ userCard.user.name }}</username>
                     <!-- Defaulted to "Follow" as you did not have relationship data in your example userCards -->
-                    {{ userCard.user.userId }}
-                    {{ userCard.user.username }}
-
-                    <button class="relationship-btn" @click="() => followUser(userCard.user.username)">Follow</button>
+                    <!-- {{ userCard.user.userId }}
+                    {{ userCard.user.username }} -->
                   </div>
-                  <!-- Default Description -->
-                  <p class="user-description">Default description</p>
                   <!-- If the user description exists, display it. Otherwise, keep the default. -->
                   <p v-if="userCard.user.description" class="user-description">{{ userCard.user.description }}</p>
+                  <p v-else class="user-description">The user stays lowkey and has no discription.</p>
+                  <button class="myAniBtn-secondary" @click="() => followUser(userCard.user.username)">Follow</button>
                 </div>
               </div>
 
@@ -226,7 +221,7 @@ export default {
 
 <style>
 .fullscreen-map {
-  height: calc(100vh - 4em);
+  height: calc(100vh);
   /* 100% of the viewport height */
   width: 100vw;
   /* 100% of the viewport width */
@@ -273,10 +268,11 @@ export default {
 }
 
 .user-icon {
+  /* padding: 0.5rem; */
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 
 .namecard-header {
@@ -370,5 +366,10 @@ export default {
   font-size: 1em;
   margin: 8px 0;
   color: #555;
+}
+
+.myAniBtn-secondary {
+  width: 5rem;
+  height: 2rem;
 }
 </style>

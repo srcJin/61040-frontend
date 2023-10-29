@@ -36,7 +36,7 @@ async function search(user: string) {
       <label for="search">Username:</label>
       <div>
         <input id="search" type="text" v-model="user" placeholder="Username" required />
-        <button type="submit" @click="search(user)" class="pure-button pure-button-primary">Search</button>
+        <button type="submit" @click="search(user)" class="myAniBtn">Search</button>
       </div>
     </form>
     <section class="addRelationship" v-if="searchedUser">

@@ -2,8 +2,8 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
+import BlogView from "../views/BlogView.vue";
 import CreatePostView from "../views/CreatePostView.vue";
-import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import MapView from "../views/MapView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
@@ -17,8 +17,9 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "Home",
-      component: HomeView,
+      name: "Plaza",
+      component: PlazaView,
+      meta: { requiresAuth: false },
     },
     {
       path: "/setting",
@@ -39,10 +40,10 @@ const router = createRouter({
       meta: { requiresAuth: false },
     },
     {
-      path: "/plaza",
-      name: "Plaza",
-      component: PlazaView,
-      meta: { requiresAuth: true },
+      path: "/blog",
+      name: "Blog",
+      component: BlogView,
+      meta: { requiresAuth: false },
     },
     {
       path: "/relationship",

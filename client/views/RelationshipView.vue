@@ -4,14 +4,17 @@ import RelationshipList from "@/components/Relationship/RelationshipList.vue";
 
 <template>
   <main>
-    <section>
+    <section class="titlebar">
+      <div class="titleText">My Relationships</div>
+    </section>
+    <section class="main-contents">
       <RelationshipList />
     </section>
   </main>
 </template>
 
 <style scoped>
-main {
+.main-contents {
   padding: 1em 2em;
 }
 </style>

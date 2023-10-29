@@ -30,17 +30,18 @@ export default class ReplyConcept {
     return { msg: "Reply successfully created!", reply };
   }
 
-  async getReplys(query: Filter<ReplyDoc>) {
+  async getReplies(query: Filter<ReplyDoc>) {
     // console.log("Getting replys with query:", query);
-    const replys = await this.replys.readMany(query, {
+    const replies = await this.replys.readMany(query, {
       sort: { dateUpdated: -1 },
     });
-    return replys;
+    // console.log("Fetched replys:", replys);
+    return replies;
   }
 
   async getRepliesByPostId(queryPostID: ObjectId) {
     // console.log("Getting replies by post ID:", queryPostID);
-    return await this.getReplys({ relatedPost: queryPostID });
+    return await this.getReplies({ relatedPost: queryPostID });
   }
 
   // async getRepliesByAuthor(author: ObjectId) {

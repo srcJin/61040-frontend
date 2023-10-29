@@ -27,8 +27,8 @@ const editReply = async (content: string) => {
     <textarea id="content" v-model="content" placeholder="Create a reply!" required> </textarea>
     <div class="base">
       <menu>
-        <li><button class="btn-small pure-button-primary pure-button" type="submit">Save</button></li>
-        <li><button class="btn-small pure-button" @click="emit('editReply')">Cancel</button></li>
+        <li><button class="btn-small myAniBtn" type="submit">Save</button></li>
+        <li><button class="myAniBtn" @click="emit('editReply')">Cancel</button></li>
       </menu>
       <p v-if="props.reply.dateCreated !== props.reply.dateUpdated" class="timestamp">Edited on: {{ formatDate(props.reply.dateUpdated) }}</p>
       <p v-else class="timestamp">Created on: {{ formatDate(props.reply.dateCreated) }}</p>
@@ -38,7 +38,7 @@ const editReply = async (content: string) => {
 
 <style scoped>
 form {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   display: flex;
   flex-direction: column;
   gap: 0.5em;

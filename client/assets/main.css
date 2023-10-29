@@ -1,10 +1,20 @@
 /* Add some global styles here! */
 
+body {
+  font-family: 'Roboto', sans-serif; 
+}
+
 :root {
   --red: rgb(208, 67, 12);
-  --base-bg: #f1f3f5;
   --theme-color: #ff9933;
-  --theme-color-nav: #b3b3b3;
+  --theme-hover-color: #bf300f;
+  --theme-color-nav: #ffffff;
+  --theme-accent-color: #ff4949;
+  --theme-secondary-color: #ebebec;
+  --theme-background-color: #f8f6f5;
+  --theme-secbutton-color: #dfdfdf;
+  --theme-secbutton-hover-color: #8a8a8a;
+
   --theme-button: white;
   --theme-color-dark: #36200a;
   --theme-button-dark: rgb(62, 62, 62);
@@ -37,4 +47,111 @@ a.button {
   justify-content: center;
   align-items: center;
   gap: 1em;
+}
+
+.myAniBtn {
+  background: var(--theme-color);
+  border: none;
+  border-radius: 0.5em;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0.5em;
+  padding: 0.7em 1.5em;
+  transition: all 0.2s ease-in-out;
+  user-select: none; /* prevent text selection on double-click */
+}
+
+.myAniBtn:hover {
+  background: var(--theme-hover-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.myAniBtn:active {
+  background: linear-gradient();
+  transform: translateY(2px);
+}
+
+.myAniBtn-accent {
+  background: var(--theme-accent-color);
+  border: none;
+  border-radius: 0.5em;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0.5em;
+  padding: 0.7em 1.5em;
+  transition: all 0.2s ease-in-out;
+  user-select: none; /* prevent text selection on double-click */
+}
+
+.myAniBtn-accent:hover {
+  background: var(--theme-accent-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.myAniBtn-accent:active {
+  background: linear-gradient();
+  transform: translateY(2px);
+}
+
+.myAniBtn-secondary {
+  background: var(--theme-secbutton-color);
+  border: none;
+  border-radius: 0.5em;
+  color: rgb(42, 42, 42);
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0.5em;
+  padding: 0.7em 1.5em;
+  transition: all 0.2s ease-in-out;
+  user-select: none; /* prevent text selection on double-click */
+}
+
+.myAniBtn-secondary:hover {
+  background: var(--theme-secbutton-hover-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.myAniBtn-secondary:active {
+  background: linear-gradient();
+  transform: translateY(2px);
+}
+
+.titlebar {
+  display: none;
+  justify-content: center;
+  background-color: var(--theme-color);
+  min-height: 4em;
+}
+
+.titleText {
+  display: none;
+  margin-top: 0.5em;
+  font-size: 1.5em;
+  color: var(--theme-bright-text);
+  max-height: 2em;
+  font-weight: bold; /* Make the text bold */
+}
+
+.main-contents {
+  padding: 1em 2em;
+}
+
+.center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  .titlebar {
+    display: flex;
+  }
+  .titleText {
+    display: block;
+  }
 }

@@ -134,12 +134,14 @@ onMounted(async () => {
       {{ props.post.postType }}
       <h1 class="post-title">{{ props.post.title }}</h1>
       <!-- <p class="post-type">Type: {{ props.post.postType }}</p> -->
-      <p class="post-author">Author: {{ props.post.author }}</p>
     </div>
+
+    <hr class="thin-divider" />
 
     <div class="content-container">
       <p>{{ props.post.content }}</p>
       <article class="timestamp">
+        <p class="post-author">Author: {{ props.post.author }}&nbsp;&nbsp;</p>
         <p v-if="props.post.dateCreated !== props.post.dateUpdated">Edited on: {{ formatDate(props.post.dateUpdated) }}</p>
         <p v-else>Created on: {{ formatDate(props.post.dateCreated) }}</p>
       </article>
@@ -160,8 +162,8 @@ onMounted(async () => {
 
     <div class="bottom-container">
       <menu v-if="props.post.author == currentUsername">
-        <li><button class="btn-small pure-button" @click="emit('editPost', props.post._id)">Edit</button></li>
-        <li><button class="button-error btn-small pure-button" @click="deletePost">Delete</button></li>
+        <li><button class="myAniBtn" @click="emit('editPost', props.post._id)">Edit</button></li>
+        <li><button class="myAniBtn-accent" @click="deletePost">Delete</button></li>
       </menu>
     </div>
   </div>
@@ -200,12 +202,9 @@ menu {
 
 .bottom-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
-  padding: 1em;
   border-radius: 8px;
-  background-color: #fff;
 }
 
 .info-container article:only-child {
@@ -233,24 +232,6 @@ button {
   transition: background-color 0.3s ease;
 }
 
-.button-error {
-  background-color: #e74c3c;
-  color: #fff;
-}
-
-.button-error:hover {
-  background-color: #c0392b;
-}
-
-.btn-small.pure-button {
-  background-color: #3498db;
-  color: #fff;
-}
-
-.btn-small.pure-button:hover {
-  background-color: #2980b9;
-}
-
 .timestamp {
   display: flex;
   justify-content: flex-end;
@@ -273,13 +254,13 @@ button {
 }
 
 .post-title {
-  font-family: "Georgia, serif"; /* This is an example; use your desired font here */
+  font-family: "Roboto", sans-serif; /* This is an example; use your desired font here */
   color: #333;
   margin-bottom: 1em;
 }
 
 .post-content {
-  font-family: "Arial, sans-serif"; /* This is an example; use your desired font here */
+  font-family: "Roboto", sans-serif; /* This is an example; use your desired font here */
   color: #555;
 }
 
@@ -318,5 +299,19 @@ img {
 
 .icon-button:focus {
   outline: none;
+}
+
+.interaction-icons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1em;
+  gap: 1em;
+
+  .thin-divider {
+    border: 0;
+    border-top: 1px solid #f7f7f7; /* Change the color to fit your design */
+    /* margin: 15px 0; Add some space above and below the divider */
+  }
 }
 </style>

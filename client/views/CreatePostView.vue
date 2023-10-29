@@ -49,8 +49,8 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <section v-if="isLoggedIn">
-    <h2>Create a post:</h2>
+  <section class="main-contents" v-if="isLoggedIn">
+    <h2 class="center">Create a post</h2>
     <CreatePostForm @refreshPosts="getPosts" />
   </section>
 </template>
@@ -70,7 +70,7 @@ p,
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;

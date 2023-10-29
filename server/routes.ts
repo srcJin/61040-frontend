@@ -212,7 +212,8 @@ class Routes {
   @Router.get("/replies/:_postId")
   async getRepliesByPostId(_postId: ObjectId) {
     console.log("getRepliesByPostId, relatedPost=", _postId);
-    return await Reply.getRepliesByPostId(_postId);
+    const replies = await Reply.getRepliesByPostId(_postId);
+    return Responses.replies(replies);
   }
 
   @Router.post("/replies/:_postId")

@@ -43,7 +43,7 @@ async function checkIfLiked(replyId: string) {
 async function getLikes(replyId?: string) {
   if (!replyId) return;
   let likesResults;
-  // console.log("postId = ", postId);
+  // console.log("replyId = ", replyId);
   try {
     likesResults = await fetchy(`/api/likes/${replyId}/like-count`, "GET");
     // console.log("getLikes likesResults = ", likesResults);
@@ -59,13 +59,13 @@ async function toggleLike() {
   try {
     console.log("Toggling like for reply:", props.reply._id);
     if (isLiked.value) {
-      // If the post is already liked, remove the like
+      // If the reply is already liked, remove the like
       console.log("isLiked", isLiked.value);
       await fetchy(`/api/likes/${props.reply._id}`, "DELETE");
       isLiked.value = false;
       likesCount.value--;
     } else {
-      // If the post is not liked, add the like
+      // If the reply is not liked, add the like
       console.log("isLiked", isLiked.value);
       await fetchy(`/api/likes/${props.reply._id}`, "POST");
       isLiked.value = true;
@@ -85,16 +85,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <p>Content: {{ props.reply.content }}</p>
-  <p class="">Author: {{ props.reply.author }}</p>
-  <p>Type: {{ props.reply.replyType }}</p>
-
-  <div class="base">
-    <menu v-if="props.reply.author == currentUsername">
-      <li><button class="btn-small pure-button" @click="emit('editReply', props.reply._id)">Edit</button></li>
-      <li><button class="button-error btn-small pure-button" @click="deleteReply">Delete</button></li>
-    </menu>
-
+  <div class="reply-container">
+    <div class="content-container">
+      <p>{{ props.reply.content }}</p>
+    </div>
     <div class="interaction-icons">
       <button class="icon-button" @click="toggleLike">
         <img v-if="likesCount > 0" :src="likedIcon" alt="Liked Icon" />
@@ -104,20 +98,32 @@ onMounted(async () => {
     </div>
 
     <article class="timestamp">
+      <p>Type: {{ props.reply.replyType }} &nbsp;&nbsp;</p>
+      <p class="">Author: {{ props.reply.author }} &nbsp;&nbsp;</p>
       <p v-if="props.reply.dateCreated !== props.reply.dateUpdated">Edited on: {{ formatDate(props.reply.dateUpdated) }}</p>
       <p v-else>Created on: {{ formatDate(props.reply.dateCreated) }}</p>
     </article>
+
+    <div class="base">
+      <menu v-if="props.reply.author == currentUsername">
+        <li><button class="myAniBtn" @click="emit('editReply', props.reply._id)">Edit</button></li>
+        <li><button class="myAniBtn-accent" @click="deleteReply">Delete</button></li>
+      </menu>
+    </div>
   </div>
 </template>
 
 <style scoped>
 p {
   margin: 0em;
+  margin-bottom: 1em;
+  font-size: 1em;
+  color: #333;
 }
 
 .author {
   font-weight: bold;
-  font-size: 1em;
+  font-size: 1.2em;
 }
 
 menu {
@@ -136,14 +142,68 @@ menu {
   font-style: italic;
 }
 
-.base {
+.bottom-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.info-container article:only-child {
+  margin-left: auto;
+}
+.author {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #555;
+}
+
+menu {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+}
+
+/* Styling buttons for a modern look */
+button {
+  border: none;
+  border-radius: 4px;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.timestamp {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.8em;
+  font-style: italic;
+  color: #888;
+}
+
+.row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.5em 0;
 }
 
-.base article:only-child {
-  margin-left: auto;
+.reply-container {
+  padding: 1em;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.reply-title {
+  font-family: "Roboto", sans-serif; /* This is an example; use your desired font here */
+  color: #333;
+  margin-bottom: 1em;
+}
+
+.reply-content {
+  font-family: "Roboto", sans-serif; /* This is an example; use your desired font here */
+  color: #555;
 }
 
 .likes,
@@ -158,9 +218,9 @@ img {
   height: 24px;
 }
 
-.post-type-icon {
+.reply-type-icon {
   margin-right: 8px; /* Adjust the margin as needed */
-  /* vertical-align: middle; */
+  vertical-align: middle;
   width: 24px;
   height: 24px;
 }
@@ -181,5 +241,18 @@ img {
 
 .icon-button:focus {
   outline: none;
+}
+
+.interaction-icons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1em;
+  gap: 1em;
+}
+.thin-divider {
+  border: 0;
+  border-top: 1px solid #f7f7f7; /* Change the color to fit your design */
+  /* margin: 15px 0; Add some space above and below the divider */
 }
 </style>

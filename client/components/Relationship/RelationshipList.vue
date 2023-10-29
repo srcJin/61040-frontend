@@ -38,7 +38,7 @@ onBeforeMount(async () => {
 <template>
   <div class="row">
     <div class="relationships">
-      <h1>My Relationships</h1>
+      <!-- <h1>My Relationships</h1> -->
       <h2>Following</h2>
 
       <article v-if="loaded">
@@ -50,7 +50,7 @@ onBeforeMount(async () => {
     </div>
     <div class="">
       <section>
-        <h1>Add Relationship</h1>
+        <h2>Add Relationship</h2>
         <AddRelationship @refreshRequests="refreshRequests" />
       </section>
       <section>
@@ -61,12 +61,12 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped>
-h1 {
+h2 {
   text-align: center;
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;

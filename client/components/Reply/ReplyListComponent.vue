@@ -47,8 +47,8 @@ onBeforeMount(async () => {
       <EditReplyForm v-else :reply="reply" @refreshReplies="getReplies" @editReply="updateEditing" />
     </article>
   </section>
-  <p v-else-if="loaded">No replies found</p>
-  <p v-else>Loading...</p>
+  <p v-else-if="loaded" class="lightgrey-text">Become the first to reply!</p>
+  <p v-else class="lightgrey-text">Loading...</p>
   <CreateReplyForm :postId="postId" @refreshReplies="getReplies" />
 </template>
 
@@ -63,11 +63,11 @@ section,
 p,
 .row {
   margin: 0 auto;
-  max-width: 60em;
+  max-width: 80em;
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
@@ -75,14 +75,12 @@ article {
   padding: 1em;
 }
 
-.replys {
-  padding: 1em;
+.replies {
+  padding: 0em;
 }
 
-.row {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
-  max-width: 60em;
+.lightgrey-text {
+  color: rgb(100, 100, 100);
+  margin-top: 20px;
 }
 </style>

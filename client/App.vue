@@ -31,28 +31,42 @@ onBeforeMount(async () => {
       <div class="titlebar-text"><img src="@/assets/images/weehive_logo.png" class="navicon" /></div>
 
       <div class="titlebar-user">
-        <div v-if="isLoggedIn">
+        <li v-if="isLoggedIn">
+          <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }">
+            <div>
+              <img src="@/assets/images/settings.svg" class="navicon" />
+              <p>Settings</p>
+            </div>
+          </RouterLink>
+
           <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }">
             <div>
               <img src="@/assets/images/user.svg" class="navicon" />
-              <p>{{ currentUsername }}</p>
+              <p>Profile</p>
             </div>
           </RouterLink>
-        </div>
-        <div v-else>
+
+          <RouterLink :to="{ name: 'Relationship' }" :class="{ underline: currentRouteName == 'Relationship' }">
+            <div>
+              <img src="@/assets/images/map.svg" class="navicon" />
+              <p>Relationship</p>
+            </div>
+          </RouterLink>
+        </li>
+        <li v-else>
           <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }">
             <div>
               <img src="@/assets/images/user.svg" class="navicon" />
               <p>Login</p>
             </div>
           </RouterLink>
-        </div>
+        </li>
       </div>
     </section>
 
     <nav class="navbar">
       <div class="title">
-        <RouterLink :to="{ name: 'Home' }">
+        <RouterLink :to="{ name: 'Blog' }">
           <img src="@/assets/images/weehive_logo.png" class="navicon" />
           <!-- <div>{{ pageTitle }}</div> -->
 
@@ -68,13 +82,6 @@ onBeforeMount(async () => {
             </div>
           </RouterLink>
 
-          <RouterLink :to="{ name: 'Relationship' }" :class="{ underline: currentRouteName == 'Relationship' }">
-            <div>
-              <img src="@/assets/images/map.svg" class="navicon" />
-              <p>Relationship</p>
-            </div>
-          </RouterLink>
-
           <RouterLink :to="{ name: 'Plaza' }" :class="{ underline: currentRouteName == 'Plaza' }">
             <div>
               <img src="@/assets/images/plaza.svg" class="navicon" />
@@ -82,17 +89,10 @@ onBeforeMount(async () => {
             </div>
           </RouterLink>
 
-          <RouterLink :to="{ name: 'CreatePost' }" :class="{ underline: currentRouteName == 'CreatePost' }">
+          <RouterLink :to="{ name: 'Blog' }" :class="{ underline: currentRouteName == 'Blog' }">
             <div>
-              <img src="@/assets/images/plaza.svg" class="navicon" />
-              <p>CreatePost</p>
-            </div>
-          </RouterLink>
-
-          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }">
-            <div>
-              <img src="@/assets/images/plaza.svg" class="navicon" />
-              <p>Home</p>
+              <img src="@/assets/images/blog.svg" class="navicon" />
+              <p>Blog</p>
             </div>
           </RouterLink>
         </li>
@@ -100,14 +100,22 @@ onBeforeMount(async () => {
           <li v-if="isLoggedIn">
             <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }">
               <div>
-                <img src="@/assets/images/user.svg" class="navicon" />
+                <img src="@/assets/images/settings.svg" class="navicon" />
                 <p>Settings</p>
               </div>
             </RouterLink>
+
             <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }">
               <div>
                 <img src="@/assets/images/user.svg" class="navicon" />
                 <p>Profile</p>
+              </div>
+            </RouterLink>
+
+            <RouterLink :to="{ name: 'Relationship' }" :class="{ underline: currentRouteName == 'Relationship' }">
+              <div>
+                <img src="@/assets/images/map.svg" class="navicon" />
+                <p>Relationship</p>
               </div>
             </RouterLink>
           </li>
@@ -173,9 +181,6 @@ ul {
   text-align: center;
   align-items: center;
 }
-.nav-items li:hover {
-  background-color: var(--theme-color-nav);
-}
 
 .nav-items li {
   display: flex;
@@ -200,7 +205,7 @@ ul {
 }
 
 h1 {
-  font-size: 2em;
+  font-size: 1.5em;
   margin: 0;
 }
 
@@ -212,14 +217,6 @@ h1 {
 
 img {
   height: 2em;
-}
-
-.navicon {
-  height: 2em;
-  /* display: flex; */
-  /* align-items: center;
-  justify-content: center;
-  margin-right: 0.5em; */
 }
 
 .nav-items div {
@@ -263,6 +260,7 @@ a {
     /* Override the top: 0; from the desktop styles */
     background-color: var(--theme-color-nav);
     z-index: 1;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
   }
 
   .title {
@@ -303,11 +301,18 @@ a {
 
   .titlebar {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     background-color: var(--theme-color);
     height: 4em;
   }
 
+  .titlebar li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap: 2vw;
+  }
   .titlebar-user {
     display: flex;
     margin-left: auto;
@@ -326,6 +331,9 @@ a {
     flex-grow: 1; /* This allows it to take up available space */
   }
 
+  .navicon {
+    height: 1.5em !important;
+  }
   .titlebar-text img {
     height: 1.5em;
     margin-top: -0.5em;

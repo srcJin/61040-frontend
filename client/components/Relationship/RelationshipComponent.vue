@@ -21,7 +21,7 @@ async function removeRelationship(user2: string, relType: string) {
 <template>
   <section>
     {{ props.relationship }}
-    <button @click="removeRelationship(props.relationship, 'Follow')" class="button-error btn-small pure-button">Remove</button>
+    <button @click="removeRelationship(props.relationship, 'Follow')" class="myAniBtn-accent">Remove</button>
   </section>
 </template>
 

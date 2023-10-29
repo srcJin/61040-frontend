@@ -16,7 +16,7 @@ async function register() {
   await createProfileByUsername(username.value);
 
   void updateSession();
-  void router.push({ name: "Home" });
+  void router.push({ name: "Plaza" });
 }
 
 async function createProfileByUsername(username: string, nickname?: string, email?: string, headshotUrl?: string, identity?: string[], role?: string) {
@@ -49,7 +49,7 @@ async function createProfileByUsername(username: string, nickname?: string, emai
         <input type="password" v-model.trim="password" id="aligned-password" placeholder="Password" required />
       </div>
       <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary">Register</button>
+        <button type="submit" class="myAniBtn">Register</button>
       </div>
     </fieldset>
   </form>

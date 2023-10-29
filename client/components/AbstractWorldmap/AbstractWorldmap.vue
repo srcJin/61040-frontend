@@ -114,7 +114,8 @@ export default {
         .attr("y", (d, i, nodes) => `${i - nodes.length / 2 + 0.35}em`)
         .text((d) => d)
         .attr("text-anchor", "middle")
-        .attr("dy", "0.35em");
+        .attr("dy", "0em")
+        .attr("font-weight", "bold");
 
       // Add a tspan for the node’s value.
       text
@@ -124,7 +125,7 @@ export default {
         // .attr("fill-opacity", 0.7)
         .text((d) => format(d.value))
         .attr("text-anchor", "middle")
-        .attr("dy", "0.35em");
+        .attr("dy", "0.5em");
 
       // Calculate the center of the SVG
       const centerX = width / 2;

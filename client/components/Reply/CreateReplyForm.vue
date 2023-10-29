@@ -9,17 +9,16 @@ const replyType = ref("");
 const emit = defineEmits(["refreshReplys"]);
 
 const props = defineProps({
-  postId: String,
+  replyId: String,
 });
 
 const createReply = async (content: string) => {
   try {
-    await fetchy(`api/replies/${props.postId}`, "POST", {
+    await fetchy(`api/replies/${props.replyId}`, "reply", {
       body: { content },
       replyType: { replyType },
-
     });
-    console.log("Post created!", {  body: { content }, replyType: { replyType } });
+    console.log("reply created!", { body: { content }, replyType: { replyType } });
   } catch (error) {
     console.error("Error creating reply:", error);
     return;
@@ -36,7 +35,7 @@ const emptyForm = () => {
 <template>
   <form @submit.prevent="createReply(content)">
     <!-- <input id="reply-title" v-model="title" placeholder="Write a title!" type="text" /> -->
-    <textarea id="post-content" v-model="content" placeholder="Write a reply!" required></textarea>
+    <textarea id="reply-content" v-model="content" placeholder="Write a reply!" required></textarea>
     <div class="reply-type">
       <label>
         <input type="radio" name="replyType" value="comment" v-model="replyType" />
@@ -47,13 +46,13 @@ const emptyForm = () => {
         Answer
       </label>
     </div>
-    <button type="submit" class="pure-button-primary pure-button">Create Reply</button>
+    <button type="submit" class="myAniBtn-seondary">Create Reply</button>
   </form>
 </template>
 
 <style scoped>
 form {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
@@ -87,7 +86,7 @@ textarea {
 }
 
 form {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;

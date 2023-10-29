@@ -37,8 +37,21 @@ onUnmounted(() => {
       <div class="titleText">Plaza</div>
     </section>
     <AbstractWorldmapComponent />
+
+    <div class="center">
+      <h3>Welcome! {{ currentUsername }}</h3>
+    </div>
+    <div class="center">
+      <h4>Click on the map to navigate to your desired regions in the world!</h4>
+    </div>
+    <div class="center">
+      <h4>Scroll down to view all the posts!</h4>
+    </div>
+
     <!-- <PostListComponent :category="selectedCategory.value" :filter="selectedFilter.value" /> -->
-    <PostListComponent />
+    <section class="main-contents">
+      <PostListComponent />
+    </section>
   </main>
 </template>
 
@@ -46,18 +59,10 @@ onUnmounted(() => {
 h1 {
   text-align: center;
 }
-
-.titlebar {
-  display: flex;
-  justify-content: center;
-  background-color: var(--theme-color);
-  min-height: 4em;
+h3 {
+  margin-bottom: 0%;
 }
-.titleText {
-  display: block;
-  margin-top: 0.5em;
-  font-size: 1.5em;
-  color: var(--theme-bright-text);
-  max-height: 2em;
+h4 {
+  margin-bottom: 0%;
 }
 </style>

@@ -50,14 +50,13 @@ onBeforeMount(async () => {
 <template>
   <div class="row">
     <div class="type-filters">
-      <button @click="filterByType('article')">Article</button>
-      <button @click="filterByType('question')">Question</button>
-      <button @click="filterByType('wiki')">Wiki</button>
+      <button class="myAniBtn" @click="filterByType('article')">Article</button>
+      <button class="myAniBtn" @click="filterByType('question')">Question</button>
+      <button class="myAniBtn" @click="filterByType('wiki')">Wiki</button>
+      <router-link to="/createPost">
+        <button class="myAniBtn">Create a New Post</button>
+      </router-link>
     </div>
-
-    <!-- <h2 v-if="!searchAuthor"></h2>
-    <h2 v-else>Posts by {{ searchAuthor }}:</h2>
-    <SearchPostForm @getPostsByAuthor="getPosts" /> -->
   </div>
 
   <section class="posts" v-if="loaded && posts.length !== 0">
@@ -87,22 +86,32 @@ p,
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
   padding: 1em;
 }
-
+.button-container {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: center; /* Center buttons horizontally within the container */
+}
 .posts {
-  padding: 1em;
+  /* padding: 1em; */
 }
 
 .row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin: 0 auto;
   max-width: 60em;
+}
+
+.type-filters {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
 }
 </style>
