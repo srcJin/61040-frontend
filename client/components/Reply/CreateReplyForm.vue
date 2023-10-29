@@ -45,7 +45,9 @@ const emptyForm = () => {
         Answer
       </label>
     </div>
-    <button type="submit" class="myAniBtn-secondary">Create Reply</button>
+    <div class="center">
+      <button type="submit" class="myAniBtn-secondary">Create Reply</button>
+    </div>
   </form>
 </template>
 
@@ -103,7 +105,7 @@ input {
 }
 
 .myAniBtn-secondary {
-  width: 120px;
+  width: 160px;
   height: 60px;
 }
 </style>
