@@ -1,0 +1,18 @@
+[
+    {"id": "East Europe", "value": 1110, "lat": 52.52, "lng": 19.405},
+    {"id": "South East Asia", "value": 2856, "lat": 10.0, "lng": 108.0},
+    {"id": "North America", "value": 3385, "lat": 54.526, "lng": -105.2551},
+    {"id": "South America", "value": 3012, "lat": -8.7832, "lng": -55.4915},
+    {"id": "Africa", "value": 3432, "lat": -8.7832, "lng": 34.5085},
+    {"id": "West Europe", "value": 1262, "lat": 50.5039, "lng": 4.4699},
+    {"id": "Middle East", "value": 2088, "lat": 26.8206, "lng": 30.8025},
+    {"id": "Central Asia", "value": 2652, "lat": 41.2995, "lng": 69.2401},
+    {"id": "Australia and Oceania", "value": 3220, "lat": -25.2744, "lng": 133.7751},
+    {"id": "East Asia", "value": 3075, "lat": 35.8617, "lng": 104.1954},
+    {"id": "South Asia", "value": 3632, "lat": 20.5937, "lng": 78.9629},
+    {"id": "North Asia", "value": 2620, "lat": 60.0, "lng": 105.0},
+    {"id": "Central America", "value": 1208, "lat": 15.7835, "lng": -90.2308},
+    {"id": "North Africa", "value": 2244, "lat": 25.0, "lng": 17.0},
+    {"id": "Sub-Saharan Africa", "value": 3116, "lat": -10.0, "lng": 24.0},
+    {"id": "Antarctic", "value": 4824, "lat": -74.59, "lng": 4.34}
+]

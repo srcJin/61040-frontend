@@ -32,7 +32,21 @@ export default class ProfileConcept {
     // Use the provided lastLocation or default to [0, 0]
     const location = lastLocation ?? [0, 0];
 
+    // Default values for user profile, for debugging purpose
+    const DEFAULT_NICKNAME = "New User";
+    const DEFAULT_EMAIL = "default@email.com"; // this might be better taken from a user input
+    const DEFAULT_HEADSHOT_URL = "https://robohash.org/hello"; // link to a default image or leave it empty
+    const DEFAULT_IDENTITY = ["farmer", "consumer"];
+    const DEFAULT_ROLE = "user";
+
+    nickname = nickname || DEFAULT_NICKNAME;
+    email = email || DEFAULT_EMAIL;
+    headshotUrl = headshotUrl || DEFAULT_HEADSHOT_URL;
+    identity = identity || DEFAULT_IDENTITY;
+    role = role || DEFAULT_ROLE;
+
     const _id = await this.profiles.createOne({ user, nickname, email, headshotUrl, identity, role, lastLocation: location });
+
     return { msg: "Profile successfully created!", profile: await this.profiles.readOne({ _id }) };
   }
 
@@ -79,7 +93,7 @@ export default class ProfileConcept {
 
   private sanitizeUpdate(update: Partial<ProfileDoc>) {
     // Make sure the update cannot change the user.
-    const allowedUpdates = ["nickname", "email"];
+    const allowedUpdates = ["nickname", "email", "headshotUrl", "identity", "role", "lastLocation"];
     for (const key in update) {
       if (!allowedUpdates.includes(key)) {
         throw new NotAllowedError(`Cannot update '${key}' field!`);

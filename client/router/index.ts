@@ -2,10 +2,14 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
-import HomeView from "../views/HomeView.vue";
+import BlogView from "../views/BlogView.vue";
+import CreatePostView from "../views/CreatePostView.vue";
 import LoginView from "../views/LoginView.vue";
+import MapView from "../views/MapView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
+import PlazaView from "../views/PlazaView.vue";
 import ProfileView from "../views/ProfileView.vue";
+import RelationshipView from "../views/RelationshipView.vue";
 import SettingView from "../views/SettingView.vue";
 
 const router = createRouter({
@@ -13,8 +17,9 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "Home",
-      component: HomeView,
+      name: "Plaza",
+      component: PlazaView,
+      meta: { requiresAuth: false },
     },
     {
       path: "/setting",
@@ -26,6 +31,30 @@ const router = createRouter({
       path: "/profile",
       name: "Profile",
       component: ProfileView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/map",
+      name: "Map",
+      component: MapView,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/blog",
+      name: "Blog",
+      component: BlogView,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/relationship",
+      name: "Relationship",
+      component: RelationshipView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/CreatePost",
+      name: "CreatePost",
+      component: CreatePostView,
       meta: { requiresAuth: true },
     },
     {

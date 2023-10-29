@@ -5,20 +5,36 @@ import { NotAllowedError, NotFoundError } from "./errors";
 
 export interface PostOptions {
   backgroundColor?: string;
+  visibility: string;
+}
+
+export type PostType = "article" | "quesiton" | "wiki";
+
+// Is it the best place to put an interface?
+export interface PostFilter {
+  author?: ObjectId;
+  title?: string;
+  postType?: PostType;
+  tags?: { $in: string[] };
 }
 
 export interface PostDoc extends BaseDoc {
   author: ObjectId;
+  title: string;
   content: string;
+  postType: PostType; // Added type field
   options?: PostOptions;
 }
 
 export default class PostConcept {
   public readonly posts = new DocCollection<PostDoc>("posts");
 
-  async create(author: ObjectId, content: string, options?: PostOptions) {
-    const _id = await this.posts.createOne({ author, content, options });
-    return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }) };
+  async create(author: ObjectId, title: string, content: string, postType?: PostType, options?: PostOptions) {
+    console.log("Creating post with title:", title, " and type:", postType);
+    const _id = await this.posts.createOne({ author, title, content, postType, options });
+    console.log("PostConcept create Created post with:", { author, title, content, postType, options });
+    const post = await this.posts.readOne({ _id });
+    return { msg: "Post successfully created!", post };
   }
 
   async getPosts(query: Filter<PostDoc>) {
@@ -32,15 +48,26 @@ export default class PostConcept {
     return await this.getPosts({ author });
   }
 
+  // // a shortcut method to return posts type by id
+  // async getPostType(_id: ObjectId): Promise<PostType> {
+  //   const post = await this.posts.readOne({ _id });
+  //   if (!post) {
+  //     throw new NotFoundError(`Post ${_id} does not exist!`);
+  //   }
+  //   return post.postType;
+  // }
+
   async update(_id: ObjectId, update: Partial<PostDoc>) {
     this.sanitizeUpdate(update);
     await this.posts.updateOne({ _id }, update);
-    return { msg: "Post successfully updated!" };
+    const post = await this.posts.readOne({ _id });
+    return { msg: "Post successfully updated!", post };
   }
 
   async delete(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
     await this.posts.deleteOne({ _id });
-    return { msg: "Post deleted successfully!" };
+    return { msg: "Post deleted successfully!", post };
   }
 
   async isAuthor(user: ObjectId, _id: ObjectId) {
@@ -55,7 +82,7 @@ export default class PostConcept {
 
   private sanitizeUpdate(update: Partial<PostDoc>) {
     // Make sure the update cannot change the author.
-    const allowedUpdates = ["content", "options"];
+    const allowedUpdates = ["content", "options", "title", "postType"]; // Added type to the allowed updates
     for (const key in update) {
       if (!allowedUpdates.includes(key)) {
         throw new NotAllowedError(`Cannot update '${key}' field!`);

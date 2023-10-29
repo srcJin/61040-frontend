@@ -73,7 +73,7 @@ const updateProfile = async () => {
     </div>
     <div class="row">
       <menu>
-        <button class="btn-small pure-button-primary pure-button" type="submit">Update</button>
+        <button class="btn-small myAniBtn" type="submit">Update</button>
       </menu>
     </div>
   </form>
@@ -95,7 +95,7 @@ p,
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;

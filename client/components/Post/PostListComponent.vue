@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import CreatePostForm from "@/components/Post/CreatePostForm.vue";
 import EditPostForm from "@/components/Post/EditPostForm.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import SearchPostForm from "./SearchPostForm.vue";
+
+let selectedType = ref(""); // empty means no filter applied
 
 const { isLoggedIn } = storeToRefs(useUserStore());
 
@@ -15,11 +15,21 @@ let posts = ref<Array<Record<string, string>>>([]);
 let editing = ref("");
 let searchAuthor = ref("");
 
+function filterByType(type: string) {
+  selectedType.value = type;
+  getPosts();
+}
+
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
+  // here use the ref storage to store the selected types
+  if (selectedType.value) {
+    query.postType = selectedType.value;
+  }
   let postResults;
   try {
     postResults = await fetchy("api/posts", "GET", { query });
+    // console.log("postResults", postResults);
   } catch (_) {
     return;
   }
@@ -38,19 +48,23 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <section v-if="isLoggedIn">
-    <h2>Create a post:</h2>
-    <CreatePostForm @refreshPosts="getPosts" />
-  </section>
   <div class="row">
-    <h2 v-if="!searchAuthor">Posts:</h2>
-    <h2 v-else>Posts by {{ searchAuthor }}:</h2>
-    <SearchPostForm @getPostsByAuthor="getPosts" />
+    <div class="type-filters">
+      <button class="myAniBtn" @click="filterByType('article')">Article</button>
+      <button class="myAniBtn" @click="filterByType('question')">Question</button>
+      <button class="myAniBtn" @click="filterByType('wiki')">Wiki</button>
+      <router-link to="/createPost">
+        <button class="myAniBtn">Create a New Post</button>
+      </router-link>
+    </div>
   </div>
+
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
+      <!-- passing post as a prop name is post, and :post passinto post component-->
       <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
       <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
+      <div></div>
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>
@@ -72,22 +86,32 @@ p,
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
   padding: 1em;
 }
-
+.button-container {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: center; /* Center buttons horizontally within the container */
+}
 .posts {
-  padding: 1em;
+  /* padding: 1em; */
 }
 
 .row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin: 0 auto;
   max-width: 60em;
+}
+
+.type-filters {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
 }
 </style>

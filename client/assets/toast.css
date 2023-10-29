@@ -9,11 +9,12 @@
   margin: 0 auto;
 
   color: #fff;
+  /* color: #ff9933; */
 }
 
 .error {
-  background-color: #fa5252;
+  background-color: #c35757;
 }
 .success {
-  background-color: #40c057;
+  background-color: #44a255;
 }

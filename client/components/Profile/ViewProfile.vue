@@ -44,18 +44,16 @@ let initProfile = ref({
   _id: "loading...",
 });
 
-async function getProfile(username: string) {
+async function getProfile() {
   // const thisUsername: string = currentUsername;
   await console.log("currentUsername", currentUsername.value);
-
-  let query: Record<string, string> = username !== undefined ? { username } : {};
   let profileResult;
   try {
-    console.log("query=", query);
     // profileResult = await fetchy(`api/profile/${username}`, "GET", { query });
+    // console.log(`getProfile api/profile/${currentUsername.value}`);
     profileResult = await fetchy(`api/profile/${currentUsername.value}`, "GET");
 
-    console.log("getProfile, profileResult=", profileResult);
+    // console.log("getProfile, profileResult=", profileResult);
   } catch (_) {
     console.log("getProfile, error");
     return;
@@ -68,7 +66,7 @@ async function getProfile(username: string) {
 // }
 
 onBeforeMount(async () => {
-  await getProfile("hello");
+  await getProfile();
   loaded.value = true;
 });
 </script>
@@ -134,7 +132,7 @@ p,
 }
 
 article {
-  background-color: var(--base-bg);
+  background-color: var(--theme-secondary-color);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
