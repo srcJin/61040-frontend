@@ -15,9 +15,9 @@ const router = useRouter();
 
 // if we scroll to the bottom of the page, routes to /home
 const checkScroll = () => {
-  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 50; // 50 is a buffer
+  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.5; // 50 is a buffer
   if (nearBottom) {
-    router.push("/");
+    void router.push("/");
   }
 };
 

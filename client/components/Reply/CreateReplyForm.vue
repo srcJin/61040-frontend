@@ -45,7 +45,7 @@ const emptyForm = () => {
         Answer
       </label>
     </div>
-    <button type="submit" class="myAniBtn-seondary">Create Reply</button>
+    <button type="submit" class="myAniBtn-secondary">Create Reply</button>
   </form>
 </template>
 
@@ -100,5 +100,10 @@ input {
   padding: 0.5em;
   border-radius: 4px;
   resize: none;
+}
+
+.myAniBtn-secondary {
+  width: 120px;
+  height: 60px;
 }
 </style>
